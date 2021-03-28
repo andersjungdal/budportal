@@ -1,0 +1,43 @@
+﻿@typeparam T
+
+<select class="@Class" @onchange="@OnTChange">
+    @for (int i = 0; i < Collection.Count; i++)
+    {
+        <option class="@ClassChild" value="@i">@GetValue(Collection[i])</option>
+    }
+</select>
+
+@code {
+
+    [Parameter]
+    public string Class { get; set; } = "btn btn-outline-primary";
+
+    [Parameter]
+    public string ClassChild { get; set; } = "border-primary";
+    [Parameter]
+    public List<T> Collection { get; set; }
+
+    [Parameter]
+    public T Value { get; set; }
+    [Parameter]
+    public EventCallback<T> ValueChanged { get; set; }
+    [Parameter]
+    public Func<T, string> GetValue { get; set; } = DefaultGetValue;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Value = Collection[0];
+    }
+
+    private Task OnTChange(ChangeEventArgs e)
+    {
+        Value = Collection[int.Parse(e.Value.ToString())];
+
+        return ValueChanged.InvokeAsync(Value);
+    }
+
+    private static string DefaultGetValue<T1>(T1 value)
+    {
+        return value.ToString();
+    }
+}

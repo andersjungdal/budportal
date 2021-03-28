@@ -1,0 +1,104 @@
+﻿
+@using ModelsInterfaces
+@using ModelsInterfaces.Enums
+@using System.Runtime.InteropServices
+@using System.Text.Json
+@using BlazorBusinessLogic
+@using BlazorBusinessLogic.ApiConnections
+@using BlazorBusinessLogic.Models.General
+@inject CompanyApiConnection comApi
+@inject StateHolder State
+@inject HttpClient client;
+<div class="rounded position-absolute" style="background-color: seagreen;padding: 20px;
+/* position the div in center */
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);">
+    <table>
+        <tr>
+            <th colspan="1000">
+                <h3 class="text-center">Login</h3>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <h3>Username</h3>
+            </th>
+            <th>
+                <input placeholder="Username" @bind="Username" />
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <h3>Pasword</h3>
+            </th>
+            <th>
+                <input type="password" placeholder="Password" minlength="8" @bind=Password />
+            </th>
+        </tr>
+        @if (Companies != null)
+        {
+            <tr>
+
+                <th>
+                    <h3>Company</h3>
+                </th>
+                <th>
+                    <SelectElement Collection="Companies.Value" GetValue="@(x=>x.Name)" @bind-Value="SelectedCompany" Class="bg-white"></SelectElement>
+                </th>
+            </tr>
+        }
+        @if (Values != null)
+        {
+
+        <tr>
+            <th>
+                <h3>Select Roles</h3>
+            </th>
+            <th>
+                <SelectElement Class="btn" Collection="Values" @bind-Value="SelectedRole"></SelectElement>
+            </th>
+        </tr>
+        }
+        
+        @if (Companies != null)
+        {
+            <tr>
+                <th>
+                    <button @onclick="LoginClick">Login</button>
+                </th>
+            </tr>
+        }
+    </table>
+</div>
+
+@code {
+    string Username { get; set; }
+    string Password { get; set; }
+    ICaching<List<Company>> Companies { get; set; }
+    Company SelectedCompany { get; set; }
+    Role SelectedRole { get; set; }
+    List<Role> Values { get; set; } = new List<Role>();
+    protected override async Task OnInitializedAsync()
+    {
+        Task<ICaching<List<Company>>> t = comApi.GetCompanyWithCache();
+        foreach (Role role in Enum.GetValues(typeof(Role)))
+        {
+            if (role != Role.NonAuthorized && role != Role.Anonymous)
+            {
+                Values.Add(role);
+            }
+        }
+        SelectedRole = Values[0];
+        Companies = await t;
+        SelectedCompany = Companies.Value[0];
+    }
+    public void LoginClick()
+    {
+        State.User = new User(){UserName = Username, Role = SelectedRole, Company = SelectedCompany };
+        client.DefaultRequestHeaders.Remove("User");
+        client.DefaultRequestHeaders.Add("User", JsonSerializer.Serialize(State.User));
+        State.LogInState = false;
+    }
+}
+

@@ -1,0 +1,76 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20200811113310_initializemig.cs" />
+    <Compile Remove="Migrations\20200811113310_initializemig.Designer.cs" />
+    <Compile Remove="Migrations\20200823112114_Initialize.cs" />
+    <Compile Remove="Migrations\20200823112114_Initialize.Designer.cs" />
+    <Compile Remove="Migrations\20200827113316_v1.cs" />
+    <Compile Remove="Migrations\20200827113316_v1.Designer.cs" />
+    <Compile Remove="Migrations\20200827143730_v1.cs" />
+    <Compile Remove="Migrations\20200827143730_v1.Designer.cs" />
+    <Compile Remove="Migrations\20200827144759_v1.cs" />
+    <Compile Remove="Migrations\20200827144759_v1.Designer.cs" />
+    <Compile Remove="Migrations\20200830150157_v2.cs" />
+    <Compile Remove="Migrations\20200830150157_v2.Designer.cs" />
+    <Compile Remove="Migrations\20200831101435_v3.cs" />
+    <Compile Remove="Migrations\20200831101435_v3.Designer.cs" />
+    <Compile Remove="Migrations\20200915090444_v4.cs" />
+    <Compile Remove="Migrations\20200915090444_v4.Designer.cs" />
+    <Compile Remove="Migrations\20200915091005_v4.cs" />
+    <Compile Remove="Migrations\20200915091005_v4.Designer.cs" />
+    <Compile Remove="Migrations\20200915112001_v5.cs" />
+    <Compile Remove="Migrations\20200915112001_v5.Designer.cs" />
+    <Compile Remove="Migrations\20200929083759_v7.cs" />
+    <Compile Remove="Migrations\20200929083759_v7.Designer.cs" />
+    <Compile Remove="Migrations\20200929085039_v7.cs" />
+    <Compile Remove="Migrations\20200929085039_v7.Designer.cs" />
+    <Compile Remove="Migrations\20200929085218_v7.cs" />
+    <Compile Remove="Migrations\20200929085218_v7.Designer.cs" />
+    <Compile Remove="Migrations\20201006071202_v8.cs" />
+    <Compile Remove="Migrations\20201006071202_v8.Designer.cs" />
+    <Compile Remove="Migrations\20201123110124_b5.cs" />
+    <Compile Remove="Migrations\20201123110124_b5.Designer.cs" />
+    <Compile Remove="Migrations\20201124132749_b6.cs" />
+    <Compile Remove="Migrations\20201124132749_b6.Designer.cs" />
+    <Compile Remove="Migrations\20201124143848_b7.cs" />
+    <Compile Remove="Migrations\20201124143848_b7.Designer.cs" />
+    <Compile Remove="Migrations\20210120100914_b7.cs" />
+    <Compile Remove="Migrations\20210120100914_b7.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.9">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Interfaces\Interfaces.csproj" />
+    <ProjectReference Include="..\ModelsInterfaces\ModelsInterfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

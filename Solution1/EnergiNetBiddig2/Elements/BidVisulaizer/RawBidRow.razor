@@ -1,0 +1,39 @@
+﻿@using System.Threading
+@using BlazorBusinessLogic
+@using BlazorBusinessLogic.Models.UI
+@using ModelsInterfaces.Enums
+@inject StateHolder State
+
+@if (!Element.Changes)
+{
+    <td class="text-nowrap text-right" style="padding: 6px">@Element.Data.Quantity.v Mw</td>
+    <td class="text-nowrap text-right" style="padding: 6px">@Element.Data.Price.v &#8364</td>
+}
+else
+{
+    <td style="padding: 6px">
+        <div class="input-group input-group-sm flex-nowrap small" >
+            <input class="form-control text-right" style="min-width: 75px" @bind="Element.Data.Quantity.v"/>
+            <div class="input-group-append">
+                <span class="input-group-text"> MW</span>
+            </div>
+        </div>
+    </td>
+    <td style="padding: 6px">
+        <div class="input-group input-group-sm flex-nowrap">
+            <input class="form-control text-right small" style="min-width: 75px" @bind="Element.Data.Price.v" />
+            <div class="input-group-append">
+                <span class="input-group-text"> &#8364</span>
+            </div>
+        </div>
+    </td>
+}
+@if (State.User.Role <= Role.Bid)
+{
+    <td class="border-right" style="padding: 6px"><button class="btn btn-outline-dark btn-sm @(Element.Changes ? "disabled" : "")" 
+                                                          @onclick="() => Element.Changes = true">Change</button></td>
+}
+@code {
+    [Parameter]
+    public BidElement Element { get; set; }
+}

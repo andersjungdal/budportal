@@ -1,0 +1,174 @@
+﻿@using ModelsInterfaces.Enums
+@using ModelsInterfaces
+@using System.Xml
+@using System.Runtime.InteropServices
+@using BlazorBusinessLogic
+@using BlazorBusinessLogic.ApiConnections
+@using BlazorBusinessLogic.Models.General
+@using BlazorBusinessLogic.Models.UI
+@inject StateHolder State;
+@inject UserApiConnection UserApi;
+
+
+<tr>
+    <td>
+        @Company.Name
+    </td>
+    <td>
+        @Company.Road @Company.StreetNumber
+    </td>
+    @if (AbleToSee)
+    {
+
+        <td>
+
+            <button class="btn btn-outline-primary border-0" @onclick="()=>Active=!Active">
+                <span class="oi @(Active ? "oi-caret-bottom" : "oi-caret-left")"></span>
+            </button>
+            @if (State.User.Role <= Role.Admin)
+            {
+                <button class="mr-5 btn btn-outline-primary border-0">
+                    <span class="oi oi-cog"></span>
+                </button>
+                <button class=" btn btn-outline-danger border-0" @onclick="StartDeletingCompany">
+                    <span class="oi oi-x"></span>
+                </button>
+            }
+        </td>
+    }
+</tr>
+@if (AbleToSee && Active && Users != null)
+{
+    <tr>
+        <td colspan="956">
+            <Table ColumnsName="@(new List<string>() {"Username", "Role", ""})">
+                @foreach (User user in Users)
+                {
+                    <tr>
+                        <td>
+                            @user.UserName
+                        </td>
+                        <td>
+                            @user.Role
+                        </td>
+                        <td>
+                            @if (State.User.Role <= Role.Admin)
+                            {
+                                <button class=" btn btn-outline-danger border-0" @onclick="() => StartDeletingUser(user)">
+                                    <span class="oi oi-x"></span>
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    @if (State.User.Role <= Role.Admin)
+                    {
+                        <button class="btn btn-primary" @onclick="() => NewUser = !NewUser"><span class="oi oi-plus"></span></button>
+                    }
+                </tr>
+            </Table>
+            @if (NewUser)
+            {
+                <div>
+                    <UserModel Company="Company" OnSubmit="OnSubmit"></UserModel>
+                </div>
+            }
+        </td>
+    </tr>
+}
+
+@code {
+    [Parameter]
+    public Company Company { get; set; }
+    [Parameter]
+    public bool AbleToSee { get; set; }
+    [Parameter]
+    public Action<Company> Delete { get; set; }
+
+    public List<User> Users { get; set; }
+    private bool Active { get; set; } = false;
+    private bool NewUser { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Users = await UserApi.GetByCompany(Company.PublicIdentifier) ?? new List<User>();
+    }
+
+    public async void OnSubmit(IUserSubmit<Company, XmlTemplate> User)
+    {
+        User result = await UserApi.Create(User);
+        if (result != null)
+        {
+            Users.Add(result);
+            NewUser = false;
+            StateHasChanged();
+        }
+    }
+
+    public void StartDeletingCompany()
+    {
+        State.PubUp = new PopUp()
+        {
+            Message = $"Are you sure you want to Delete {Company.Name}",
+            Buttons = new PubUpButtons[]
+            {
+                new PubUpButtons
+                {
+                    Text = "Yes",
+                    Event =()=>
+                    {
+                        Delete(Company);
+                        State.PubUp = null;
+                    }
+                },
+                new PubUpButtons
+                {
+                    Text = "No",
+                    Event =()=>
+                    {
+                        State.PubUp = null;
+                    }
+                }
+                }
+
+        };
+    }
+    public void StartDeletingUser(User user)
+    {
+        State.PubUp = new PopUp()
+        {
+            Message = $"Are you sure you want to Delete {user.UserName}",
+            Buttons = new PubUpButtons[]
+            {
+                new PubUpButtons
+                {
+                    Text = "Yes",
+                    Event = () =>
+                    {
+                        DeleteUserYes(user);
+                    }
+                },
+                new PubUpButtons
+                {
+                    Text = "No",
+                    Event =()=>
+                    {
+                        State.PubUp = null;
+                    }
+                }
+                }
+
+        };
+    }
+
+    public async void DeleteUserYes(User user)
+    {
+        if (await UserApi.Delete(user.Id))
+        {
+            Users.Remove(user);
+            State.PubUp = null;
+            StateHasChanged();
+        }
+    }
+}

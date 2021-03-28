@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.9" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="18.3.0.47" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EnergyBidding\Shared\EnergyBidding.Shared.csproj" />
+    <ProjectReference Include="..\ModelsInterfaces\ModelsInterfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+    </Reference>
+  </ItemGroup>
+
+</Project>

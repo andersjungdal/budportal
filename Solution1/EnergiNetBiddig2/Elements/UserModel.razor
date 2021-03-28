@@ -1,0 +1,53 @@
+﻿@using ModelsInterfaces
+@using ModelsInterfaces.Enums
+@using BlazorBusinessLogic.Models.General
+<h3>UserModel</h3>
+
+<EditForm Model="@UserSubmit" OnValidSubmit="@(() => { UserSubmit.Company = Company;
+                                                     OnSubmit(UserSubmit); })">
+    <div>
+        <p>
+            <label>
+                Username <br />
+                <InputText @bind-Value="@UserSubmit.UserName" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Password <br />
+                <InputText @bind-Value="@UserSubmit.Password" />
+            </label>
+        </p><p>
+            <label>
+                Confirm your Password <br />
+                <InputText @bind-Value="@UserSubmit.Password" />
+            </label>
+        </p>
+        <p>
+            <label>
+                User Roles<br />
+                 <InputSelect @bind-Value="@UserSubmit.Role">
+                     @foreach (Role opt in Enum.GetValues(typeof(Role)))
+                     {
+                         if (opt != Role.NonAuthorized)
+                         {
+                             <option value="@opt">@opt</option>
+                         }
+                     }
+                 </InputSelect>
+            </label>
+        </p>
+    </div>
+    <button type="submit">Create new User</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public IUserSubmit<Company, XmlTemplate> UserSubmit { get; set; } = new UserSubmit<Company, XmlTemplate>();
+    [Parameter]
+    public Company Company { get; set; }
+    [Parameter]
+    public Action<IUserSubmit<Company, XmlTemplate>> OnSubmit { get; set; }
+
+}

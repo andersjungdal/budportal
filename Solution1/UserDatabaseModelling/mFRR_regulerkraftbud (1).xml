@@ -1,0 +1,285 @@
+<BidDocument xmlns="http://www.energinet.dk/schemas/BalRespXML/BidDocument/v13" xmlns:ecc="etso-core-cmpts.xsd" xmlns:ecl="etso-code-lists.xsd" xmlns:ns2="http://www.energinet.dk/schemas/BalRespXML/BidDocument/v13" xmlns:ns4="http://www.energinet.dk/schemas/BalRespXML/MessageHeader/v13" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.energinet.dk/schemas/BalRespXML/BidDocument/v13  ../BidDocument-13.xsd">
+	<ns4:MessageHeader>
+		<ns4:DocumentIdentification v="DOC1234" />
+		<ns4:DocumentVersion v="1" />
+		<ns4:DocumentType v="A24" />
+		<ns4:ProcessType v="DK-OP" />
+		<ns4:SenderIdentification codingScheme="A10" v="placeholdercompanyxml" />
+		<ns4:SenderRole v="A08" />
+		<ns4:ReceiverIdentification codingScheme="A10" v="5790000432752" />
+		<ns4:ReceiverRole v="A04" />
+		<ns4:DocumentDateTime v="2020-08-04T12:00:00Z" />
+		<ns4:ScheduleTimeInterval v="2020-08-04T22:00Z/2020-08-05T22:00Z" />
+		<ns4:Domain codingScheme="A01" v="10YDK-1--------W" />
+	</ns4:MessageHeader>
+	<ns2:BidMessage>
+		<ns2:BidIdentification v="ID101" />
+		<ns2:ContractIdentification v="Contract-2000-12" />
+		<ns2:BusinessType v="BID" />
+		<ns2:MeasurementUnitQuantity v="MAW" />
+		<ns2:MeasurementUnitPrice v="MWH" />
+		<ns2:Currency v="EUR" />
+		<ns2:StartGradient v="100" />
+		<ns2:StopGradient v="100" />
+		<ns2:DeadTime v="PT10M" />
+		<ns2:Period>
+			<ns2:BidInterval v="2020-08-04T22:00Z/2020-08-05T22:00Z" />
+			<ns2:Resolution v="PT1H" />
+			<ns2:Interval>
+				<ns2:Position v="1" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="2" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="3" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="4" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="5" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="6" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="7" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="8" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="9" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="10" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="11" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="12" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="13" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="14" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="15" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="16" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="17" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="18" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="19" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="20" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="21" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="22" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="23" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="24" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+		</ns2:Period>
+	</ns2:BidMessage>
+	<ns2:BidMessage>
+		<ns2:BidIdentification v="ID102" />
+		<ns2:ContractIdentification v="Contract-2000-12" />
+		<ns2:BusinessType v="BID" />
+		<ns2:MeasurementUnitQuantity v="MAW" />
+		<ns2:MeasurementUnitPrice v="MWH" />
+		<ns2:Currency v="EUR" />
+		<ns2:StartGradient v="100" />
+		<ns2:StopGradient v="100" />
+		<ns2:DeadTime v="PT10M" />
+		<ns2:Period>
+			<ns2:BidInterval v="2020-08-04T22:00Z/2020-08-05T22:00Z" />
+			<ns2:Resolution v="PT1H" />
+			<ns2:Interval>
+				<ns2:Position v="1" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="2" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="3" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="4" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="5" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="6" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="7" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="8" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="9" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="10" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="11" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="12" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="13" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="14" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="15" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="16" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="17" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="18" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="19" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="20" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="21" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="22" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="23" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+			<ns2:Interval>
+				<ns2:Position v="24" />
+				<ns2:Price v="0" />
+				<ns2:Quantity v="0" />
+			</ns2:Interval>
+		</ns2:Period>
+	</ns2:BidMessage>
+</BidDocument>

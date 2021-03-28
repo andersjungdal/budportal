@@ -1,0 +1,35 @@
+﻿@using EnergyBidding.Shared.XmlDocument
+@using System.Xml.Serialization
+@using System.IO
+@using System.Linq
+@using BlazorBusinessLogic.Models.General
+
+@if (Text != null)
+{
+    foreach (string text in Text)
+    {
+<div class="p-2">
+    @text Mw
+</div>
+    }
+}
+
+@code {
+    [Parameter]
+    public RawBid Bid { get; set; }
+    public List<string> Text = new List<string>();
+    protected override async Task OnInitializedAsync()
+    {
+        XmlSerializer serializer = new XmlSerializer(typeof(BidDocument));
+        BidDocument xmlDocument;
+        using (TextReader reader = new StringReader(Bid.XmlString))
+        {
+            xmlDocument = (BidDocument)serializer.Deserialize(reader);
+        }
+        foreach (BidDocumentBidMessage message in xmlDocument.BidMessage)
+        {
+            double quantity = message.Period.Interval.Sum(x => x.Quantity.v);
+            Text.Add(message.BidIdentification.v + ": " + quantity);
+        }
+    }
+}

@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\henri\.nuget\packages\microsoft.net.test.sdk\16.7.1\build\netcoreapp2.1" t="Include">
+      <e p="Microsoft.NET.Test.Sdk.Program.cs" t="Include" />
+    </e>
+    <e p="C:\Users\henri\.nuget\packages\microsoft.testplatform.testhost\16.7.1\build\netcoreapp2.1\x64\testhost.dll" t="Include" />
+    <e p="C:\Users\henri\.nuget\packages\microsoft.testplatform.testhost\16.7.1\build\netcoreapp2.1\x64\testhost.exe" t="Include" />
+    <e p="C:\Users\henri\.nuget\packages\xunit.runner.visualstudio\2.4.3\build\netcoreapp2.1\xunit.runner.reporters.netcoreapp10.dll" t="Include" />
+    <e p="C:\Users\henri\.nuget\packages\xunit.runner.visualstudio\2.4.3\build\netcoreapp2.1\xunit.runner.utility.netcoreapp10.dll" t="Include" />
+    <e p="C:\Users\henri\.nuget\packages\xunit.runner.visualstudio\2.4.3\build\netcoreapp2.1\xunit.runner.visualstudio.dotnetcore.testadapter.dll" t="Include" />
+    <e p="C:\Users\henri\AppData\Local\JetBrains\Rider2020.2\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\henri\AppData\Local\JetBrains\Rider2020.2\resharper-host\Local\Transient\Rider\v202\SolutionCaches\_Solution1.-1673813240.00" t="ExcludeRecursive" />
+    <e p="C:\Users\henri\Desktop\EnergiBitting\Solution1" t="IncludeFlat">
+      <e p="ApiGateway.BusinessLogic" t="IncludeRecursive">
+        <e p="ApiGateway.BusinessLogic.csproj" t="IncludeRecursive" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="HttpRequestDeserializingExtension.cs" t="Include" />
+        <e p="Interfaces" t="Include">
+          <e p="IXmlReader.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="ApiGateway.BusinessLogic.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Translasion.cs" t="Include" />
+        <e p="XmlReader.cs" t="Include" />
+      </e>
+      <e p="Backend" t="Include">
+        <e p="Application" t="Include">
+          <e p="Api" t="Include" />
+          <e p="BusinessLogic" t="Include" />
+        </e>
+        <e p="Domain" t="Include" />
+      </e>
+      <e p="BiddingTestX" t="IncludeRecursive">
+        <e p="Backend" t="Include">
+          <e p="BusinessLogic" t="Include">
+            <e p="HttpRequestDeserializingExtension.cs" t="Include" />
+            <e p="Treanlasions.cs" t="Include" />
+            <e p="XmlReaderTest.cs" t="Include" />
+          </e>
+        </e>
+        <e p="BiddingTestX.csproj" t="IncludeRecursive" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Frondtend" t="Include">
+          <e p="BusinessLayer" t="Include">
+            <e p="AktionsApiConnectionTests.cs" t="Include" />
+            <e p="ApiErrorMessageTest.cs" t="Include" />
+            <e p="CompanyApiConnectionTests.cs" t="Include" />
+            <e p="RawBidApiConnectionTests.cs" t="Include" />
+            <e p="UserApiConnectionTests.cs" t="Include" />
+          </e>
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="BiddingTestX.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Resources" t="Include">
+          <e p="mFRR_regulerkraftbud.xml" t="Include" />
+        </e>
+        <e p="Resoureces.Designer.cs" t="Include" />
+        <e p="Resoureces.resx" t="Include" />
+      </e>
+      <e p="BlazorBisnesLayer" t="IncludeRecursive">
+        <e p="ApiConnections" t="Include">
+          <e p="ApiErrorMessage.cs" t="Include" />
+          <e p="AreasApiConnections.cs" t="Include" />
+          <e p="CompanyApiConnection.cs" t="Include" />
+          <e p="RawBidApiConnection.cs" t="Include" />
+          <e p="UserApiConnection.cs" t="Include" />
+        </e>
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="BlazorBusinessLogic.csproj" t="IncludeRecursive" />
+        <e p="Extensions" t="Include">
+          <e p="HttpReaderExtensions.cs" t="Include" />
+          <e p="IJSRuntiomeExtensions.cs" t="Include" />
+          <e p="MethodTranslation.cs" t="Include" />
+        </e>
+        <e p="Interfaces" t="Include">
+          <e p="IApiErrorMessage.cs" t="Include" />
+        </e>
+        <e p="Models" t="Include">
+          <e p="General" t="Include">
+            <e p="Area.cs" t="Include" />
+            <e p="Company.cs" t="Include" />
+            <e p="RawBid.cs" t="Include" />
+            <e p="User.cs" t="Include" />
+            <e p="UserSubmit.cs" t="Include" />
+          </e>
+          <e p="UI" t="Include">
+            <e p="BidElement.cs" t="Include" />
+            <e p="PopUp.cs" t="Include" />
+            <e p="PubUpButtons.cs" t="Include" />
+          </e>
+          <e p="XL" t="Include">
+            <e p="XLConverter.cs" t="Include" />
+          </e>
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netstandard2.1" t="Include">
+              <e p="BlazorBusinessLogic.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="StateHolder.cs" t="Include" />
+      </e>
+      <e p="CalenderPlayground" t="IncludeRecursive">
+        <e p="_Imports.razor" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Calender.razor" t="Include" />
+        <e p="CalenderPlayground.csproj" t="IncludeRecursive" />
+        <e p="Elements" t="Include">
+          <e p="DayOfMonthElement.razor" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netstandard2.0" t="Include">
+              <e p="CalenderPlayground.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Objects" t="Include">
+          <e p="DateContainer.cs" t="Include" />
+        </e>
+        <e p="wwwroot" t="Include">
+          <e p="background.png" t="Include" />
+          <e p="exampleJsInterop.js" t="Include" />
+          <e p="styles.css" t="Include" />
+        </e>
+      </e>
+      <e p="Core" t="Include" />
+      <e p="EnergyBidding\Client" t="IncludeRecursive">
+        <e p="_Imports.razor" t="Include" />
+        <e p="App.razor" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="BrugerHontering" t="Include" />
+        <e p="Elements" t="Include">
+          <e p="BidVisulaizer" t="Include">
+            <e p="BidTable.razor" t="Include" />
+            <e p="RawBidHeadder.razor" t="Include" />
+            <e p="RawBidRow.razor" t="Include" />
+          </e>
+          <e p="CompanyModel.razor" t="Include" />
+          <e p="CompanyRow.razor" t="Include" />
+          <e p="ErrorPopUp.razor" t="Include" />
+          <e p="FlexBidSumElement.razor" t="Include" />
+          <e p="Login.razor" t="Include" />
+          <e p="SelectElement.razor" t="Include" />
+          <e p="Table.razor" t="Include" />
+          <e p="UserModel.razor" t="Include" />
+          <e p="UserTable.razor" t="Include" />
+        </e>
+        <e p="EnergyBidding.Client.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netstandard2.1" t="Include">
+              <e p="EnergyBidding.Client.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Pages" t="Include">
+          <e p="BidGrid.razor" t="Include" />
+          <e p="BidSelection.razor" t="Include" />
+          <e p="Company" t="Include">
+            <e p="CompanyPage.razor" t="Include" />
+            <e p="EnergiNet.razor" t="Include" />
+            <e p="NormalCompany.razor" t="Include" />
+          </e>
+          <e p="ExcelTest.razor" t="Include" />
+          <e p="GridPage.razor" t="Include" />
+          <e p="Index.razor" t="Include" />
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="launchSettings.json" t="Include" />
+        </e>
+        <e p="Shared" t="Include">
+          <e p="Footer.razor" t="Include" />
+          <e p="Loading.razor" t="Include" />
+          <e p="MainLayout.razor" t="Include" />
+          <e p="NavMenu.razor" t="Include" />
+          <e p="SurveyPrompt.razor" t="Include" />
+        </e>
+        <e p="wwwroot" t="Include">
+          <e p="css" t="Include">
+            <e p="app.css" t="Include" />
+            <e p="bootstrap" t="Include">
+              <e p="bootstrap.min.css" t="Include" />
+              <e p="bootstrap.min.css.map" t="Include" />
+            </e>
+            <e p="open-iconic" t="Include">
+              <e p="font" t="Include">
+                <e p="css" t="Include">
+                  <e p="open-iconic-bootstrap.min.css" t="Include" />
+                </e>
+                <e p="fonts" t="Include">
+                  <e p="open-iconic.eot" t="Include" />
+                  <e p="open-iconic.otf" t="Include" />
+                  <e p="open-iconic.svg" t="Include" />
+                  <e p="open-iconic.ttf" t="Include" />
+                  <e p="open-iconic.woff" t="Include" />
+                </e>
+              </e>
+              <e p="FONT-LICENSE" t="Include" />
+              <e p="ICON-LICENSE" t="Include" />
+              <e p="README.md" t="Include" />
+            </e>
+            <e p="Ours" t="Include">
+              <e p="Disable.css" t="Include" />
+              <e p="Footer.css" t="Include" />
+              <e p="SmallStyling.css" t="Include" />
+            </e>
+          </e>
+          <e p="favicon.ico" t="Include" />
+          <e p="index.html" t="Include" />
+          <e p="JavaScript" t="Include">
+            <e p="SaveFiles.js" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="EnergyBidding\Server" t="IncludeRecursive">
+        <e p="appsettings.Development.json" t="Include" />
+        <e p="appsettings.json" t="Include" />
+        <e p="Authorization" t="Include">
+          <e p="AuthAttributes" t="Include">
+            <e p="FromBodyCompanyRequired.cs" t="Include" />
+            <e p="FromBodyRawBidRequired.cs" t="Include" />
+            <e p="FromBodyUserRequired.cs" t="Include" />
+            <e p="FromQueryRequired.cs" t="Include" />
+            <e p="FromXmlDocument.cs" t="Include" />
+            <e p="IRequestFinder.cs" t="Include" />
+            <e p="OnlyOwnerRequired.cs" t="Include" />
+            <e p="RoleAuthorizationNiveau.cs" t="Include" />
+          </e>
+          <e p="AuthMiddleware" t="Include">
+            <e p="MockAuthenticationMiddelware.cs" t="Include" />
+            <e p="MockCompanyMiddelware.cs" t="Include" />
+          </e>
+        </e>
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Controllers" t="Include">
+          <e p="AreaController.cs" t="Include" />
+          <e p="CompanyController.cs" t="Include" />
+          <e p="RawBidController.cs" t="Include" />
+          <e p="UserController.cs" t="Include" />
+        </e>
+        <e p="EnergyBidding.Server.csproj" t="IncludeRecursive" />
+        <e p="Externeal.Conections" t="Include">
+          <e p="FunctionsProxy.cs" t="Include" />
+        </e>
+        <e p="Models" t="Include">
+          <e p="Area.cs" t="Include" />
+          <e p="Company.cs" t="Include" />
+          <e p="RawBid.cs" t="Include" />
+          <e p="User.cs" t="Include" />
+          <e p="UserUpsert.cs" t="Include" />
+          <e p="XmlDocumentModel" t="Include">
+            <e p="AuthBidDocument.cs" t="Include" />
+            <e p="AuthMessageHeader.cs" t="Include" />
+          </e>
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="EnergyBidding.Server.AssemblyInfo.cs" t="Include" />
+              <e p="EnergyBidding.Server.RazorAssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Pages" t="Include">
+          <e p="Error.cshtml" t="Include" />
+          <e p="Error.cshtml.cs" t="Include" />
+          <e p="Shared" t="Include">
+            <e p="_Layout.cshtml" t="Include" />
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="launchSettings.json" t="Include" />
+          <e p="PublishProfiles" t="Include">
+            <e p="Portal-UI-and-API - Web Deploy.pubxml" t="Include" />
+          </e>
+          <e p="ServiceDependencies" t="Include">
+            <e p="Portal-UI-and-API - Web Deploy" t="Include">
+              <e p="mssql1.arm.json" t="Include" />
+              <e p="profile.arm.json" t="Include" />
+            </e>
+          </e>
+          <e p="serviceDependencies.json" t="Include" />
+          <e p="serviceDependencies.Portal-UI-and-API - Web Deploy.json" t="Include" />
+        </e>
+        <e p="Startup.cs" t="Include" />
+      </e>
+      <e p="EnergyBidding\Shared" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Caching.cs" t="Include" />
+        <e p="EnergyBidding.Shared.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netstandard2.1" t="Include">
+              <e p="EnergyBidding.Shared.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="XmlDocument" t="Include">
+          <e p="BidDocument.cs" t="Include" />
+          <e p="BidDocumentBidIdentification.cs" t="Include" />
+          <e p="BidDocumentBidMessage.cs" t="Include" />
+          <e p="BidDocumentBidMessageBusinessType.cs" t="Include" />
+          <e p="BidDocumentBidMessageCurrency.cs" t="Include" />
+          <e p="BidDocumentBidMessageDeadTime.cs" t="Include" />
+          <e p="BidDocumentBidMessageMeasurementUnitPrice.cs" t="Include" />
+          <e p="BidDocumentBidMessageMeasurementUnitQuantity.cs" t="Include" />
+          <e p="BidDocumentBidMessagePeriod.cs" t="Include" />
+          <e p="BidDocumentBidMessagePeriodBidInterval.cs" t="Include" />
+          <e p="BidDocumentBidMessagePeriodInterval.cs" t="Include" />
+          <e p="BidDocumentBidMessagePeriodIntervalPosition.cs" t="Include" />
+          <e p="BidDocumentBidMessagePeriodIntervalPrice.cs" t="Include" />
+          <e p="BidDocumentBidMessagePeriodIntervalQuantity.cs" t="Include" />
+          <e p="BidDocumentBidMessagePeriodResolution.cs" t="Include" />
+          <e p="BidDocumentBidMessageStartGradient.cs" t="Include" />
+          <e p="BidDocumentBidMessageStopGradient.cs" t="Include" />
+          <e p="BidDocumentContractIdentification.cs" t="Include" />
+          <e p="MessageHeader.cs" t="Include" />
+          <e p="MessageHeaderDocumentDateTime.cs" t="Include" />
+          <e p="MessageHeaderDocumentIdentification.cs" t="Include" />
+          <e p="MessageHeaderDocumentType.cs" t="Include" />
+          <e p="MessageHeaderDocumentVersion.cs" t="Include" />
+          <e p="MessageHeaderDomain.cs" t="Include" />
+          <e p="MessageHeaderProcessType.cs" t="Include" />
+          <e p="MessageHeaderReceiverIdentification.cs" t="Include" />
+          <e p="MessageHeaderReceiverRole.cs" t="Include" />
+          <e p="MessageHeaderScheduleTimeInterval.cs" t="Include" />
+          <e p="MessageHeaderSenderIdentification.cs" t="Include" />
+          <e p="MessageHeaderSenderRole.cs" t="Include" />
+        </e>
+      </e>
+      <e p="Frontend" t="Include">
+        <e p="BusinessLogic" t="Include" />
+        <e p="UI" t="Include" />
+      </e>
+      <e p="Functions" t="IncludeRecursive">
+        <e p=".gitignore" t="Include" />
+        <e p="Area" t="Include">
+          <e p="Create.cs" t="Include" />
+          <e p="Delete.cs" t="Include" />
+          <e p="Get.cs" t="Include" />
+          <e p="Update.cs" t="Include" />
+        </e>
+        <e p="bin\Debug\netcoreapp3.1\bin" t="ExcludeRecursive" />
+        <e p="Company" t="Include">
+          <e p="Create.cs" t="Include" />
+          <e p="Delete.cs" t="Include" />
+          <e p="Get.cs" t="Include" />
+          <e p="Update.cs" t="Include" />
+        </e>
+        <e p="Functions.csproj" t="IncludeRecursive" />
+        <e p="host.json" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="Functions.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Properties" t="Include">
+          <e p="PublishProfiles" t="Include">
+            <e p="EnerginetPraktikPortal - Zip Deploy.pubxml" t="Include" />
+          </e>
+          <e p="ServiceDependencies" t="Include">
+            <e p="EnerginetPraktikPortal - Zip Deploy" t="Include">
+              <e p="profile.arm.json" t="Include" />
+            </e>
+          </e>
+          <e p="serviceDependencies.EnerginetPraktikPortal - Zip Deploy.json" t="Include" />
+          <e p="serviceDependencies.json" t="Include" />
+        </e>
+        <e p="RawBid" t="Include">
+          <e p="Create.cs" t="Include" />
+          <e p="Delete.cs" t="Include" />
+          <e p="Get.cs" t="Include" />
+          <e p="Update.cs" t="Include" />
+        </e>
+        <e p="Startup.cs" t="Include" />
+        <e p="User" t="Include">
+          <e p="Create.cs" t="Include" />
+          <e p="Delete.cs" t="Include" />
+          <e p="Get.cs" t="Include" />
+          <e p="Update.cs" t="Include" />
+        </e>
+      </e>
+      <e p="Interfaces" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="IDataBase.cs" t="Include" />
+        <e p="Interfaces.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="Interfaces.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="IntergrationsTestX" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="IntergrationsTestX.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="IntergrationsTestX.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Resources" t="Include">
+          <e p="mFRR_regulerkraftbud.xml" t="Include" />
+        </e>
+        <e p="Seetings.Designer.cs" t="Include" />
+        <e p="Seetings.resx" t="Include" />
+        <e p="Setup" t="Include">
+          <e p="DataBaseConections.cs" t="Include" />
+        </e>
+        <e p="Tests" t="Include">
+          <e p="DatbabaseQurriesTest" t="Include">
+            <e p="ModelleringAktionsTests.cs" t="Include" />
+            <e p="ModelleringCompanyTEst.cs" t="Include" />
+            <e p="ModelleringRawBitTests.cs" t="Include" />
+            <e p="ModelleringUserTests.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="ModelsInterfaces" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Enums" t="Include">
+          <e p="Role.cs" t="Include" />
+        </e>
+        <e p="IArea.cs" t="Include" />
+        <e p="ICaching.cs" t="Include" />
+        <e p="ICompany.cs" t="Include" />
+        <e p="IRawBid.cs" t="Include" />
+        <e p="IUser.cs" t="Include" />
+        <e p="IUserSubmit.cs" t="Include" />
+        <e p="ModelsInterfaces.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netstandard2.0" t="Include">
+              <e p="ModelsInterfaces.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="Solution1.sln" t="IncludeFlat" />
+      <e p="UnitTest" t="Include" />
+      <e p="UserDatabaseModelling" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Context" t="Include">
+          <e p="SecurityDbContext.cs" t="Include" />
+        </e>
+        <e p="CRUD" t="Include">
+          <e p="ModellingArea.cs" t="Include" />
+          <e p="ModellingCompany.cs" t="Include" />
+          <e p="ModellingRawBit.cs" t="Include" />
+          <e p="ModellingUser.cs" t="Include" />
+        </e>
+        <e p="DatabaseModelling.csproj" t="IncludeRecursive" />
+        <e p="DbModels" t="Include">
+          <e p="Area.cs" t="Include" />
+          <e p="Company.cs" t="Include" />
+          <e p="RawBid.cs" t="Include" />
+          <e p="User.cs" t="Include" />
+        </e>
+        <e p="mFRR_regulerkraftbud (1).xml" t="Include" />
+        <e p="Migrations" t="Include">
+          <e p="20201011124731_b1.cs" t="Include" />
+          <e p="20201011124731_b1.Designer.cs" t="Include" />
+          <e p="20201012085455_b2.cs" t="Include" />
+          <e p="20201012085455_b2.Designer.cs" t="Include" />
+          <e p="SecurityDbContextModelSnapshot.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="DatabaseModelling.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Resource.Designer.cs" t="Include" />
+        <e p="Resource.resx" t="Include" />
+      </e>
+    </e>
+  </component>
+</project>

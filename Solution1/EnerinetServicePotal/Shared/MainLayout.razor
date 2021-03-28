@@ -1,0 +1,36 @@
+﻿@using EnerinetServicePotal.Elements
+@using BlazorBuisnessLogic.Net5
+@inherits LayoutComponentBase
+@inject StateHolder State
+
+<div class="page">
+    @if (State.PubUp != null)
+    {
+        <div class="position-absolute w-100 h-100" style="background-color: rgba(100,100,100,0.6); z-index: 3">
+            <ErrorPopUp></ErrorPopUp>
+        </div>
+    }
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <div class="top-row px-4">
+            <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+        </div>
+        @if (State.LogInState)
+        {
+            <Login />
+        }
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+@code {
+
+    protected override void OnInitialized()
+    {
+        State.globalStateChange = StateHasChanged;
+    }
+}

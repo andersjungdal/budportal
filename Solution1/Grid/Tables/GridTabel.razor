@@ -1,0 +1,114 @@
+﻿@using Grid
+@using System.Data
+@using System.Runtime.CompilerServices
+@using System.Runtime.InteropServices
+@using Grid.Tables.Cells
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="Grid">
+    <table class="Grid">
+        <thead>
+            @for (int y = 0, currentHeight = 0, maxHight = 0; y < HorizontalHeader.Count; y++, currentHeight += maxHight, maxHight = 0)
+            {
+            <tr style="top: @(currentHeight)px">
+                @if (VerticalHeader != null && VerticalHeader.Count > 0)
+                {
+                    <th style="left: 0px; z-index: 2; top: @(currentHeight)px;" colspan="@VerticalHeader[0].Count">
+
+                    </th>
+                }
+                @for (int x = 0; x < HorizontalHeader[y].Count; x++)
+                {
+                    <th style="top: @(currentHeight)px; z-index: 1; outline: solid 1px black;" colspan="@HorizontalHeader[y][x].Columspan ">@HorizontalHeader[y][x].Value</th>
+                    {
+                        if (maxHight < HorizontalHeader[y][x].Hight)
+                        {
+                            maxHight = HorizontalHeader[y][x].Hight;
+                        }
+                    }
+                }
+            </tr>
+            }
+        </thead>
+        <tbody>
+            @for (int y = 0; y < Body.Count; y++)
+            {
+            <tr>
+                @if (VerticalHeader.Count > y)
+                {
+                    @for (int x = 0, currentPixels = 0; x < VerticalHeader[y].Count; currentPixels += VerticalHeader[y][x].Width, x++)
+                    {
+                        <th style="left: @(currentPixels+"px"); min-width:@VerticalHeader[y][x].Width;max-width:@VerticalHeader[y][x].Width;
+                        width:@VerticalHeader[y][x].Width; height:@VerticalHeader[y][x].Hight; outline: solid 1px black;">@VerticalHeader[y][x].Value</th>
+                    }
+                }
+                @for (int x = 0; x < Body[y].Count; x++)
+                {
+                    <CellElement CellInstance="Body[y][x]" X="x" Y="y" OnValueChange="OnValueChange"></CellElement>
+                }
+            </tr>
+            }
+            </tbody>
+        </table>
+</div>
+<style>
+    div.Grid {
+        overflow: auto;
+        max-height: 100%;
+        max-width: 100%;
+    }
+
+    table.Grid tbody tr td input {
+        border: 0px;
+    }
+
+    table.Grid th {
+        outline: solid 1px black;
+    }
+    table.Grid td {
+        outline: solid 1px lightgray;
+    }
+
+
+    table.Grid tbody tr th {
+        position: sticky;
+        min-width: 100px;
+        max-width: 100px;
+        width: 100px;
+        background: white;
+    }
+
+    table.Grid thead tr th:first-child {
+        left: 0;
+    }
+
+    table.Grid thead tr th {
+        position: sticky;
+        min-height: 40px;
+        max-height: 40px;
+        height: 40px;
+        background: white;
+        padding: 0px 2px;
+    }
+</style>
+
+@code
+{
+    [Parameter]
+    public List<List<HCell>> VerticalHeader { get; set; }
+    [Parameter]
+    public List<List<HCell>> HorizontalHeader { get; set; }
+    [Parameter]
+    public List<List<ICell>> Body { get; set; }
+
+    [Parameter]
+    public Action<ValueChangeEventArgs> OnValueChange { get; set; } = ValueChanged;
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+    public static void ValueChanged(ValueChangeEventArgs eventArgs)
+    {
+
+    }
+}

@@ -1,0 +1,51 @@
+﻿@using BlazorBusinessLogic.Interfaces
+@using BlazorBusinessLogic.Models.General
+<h3>SelectEaliereDocuments</h3>
+<Loading DataIsNotAvaiable="Document==null">
+    <Body>
+        <Table ColumnsName="@(new List<string> {"Date", "Area", "Version"})" TableClass="table table-hover">
+            @foreach (BidDateAndVersion version in Document)
+            {
+                for (int i = version.Version; i >= 1; i--)
+                {
+                    int versionen = i;
+                    <TableRow Object="version" RowClick="(x)=>SelectDocument(x, versionen)" 
+                              Style="@(DocumentSelected == version && DocumentVersionSelected == i ? "background:lightskyblue" : "")">
+
+                        <td>@version.Date.ToString("dd/MM/yyyy")</td>
+                        <td>@version.Area.Type</td>
+                        <td>@versionen</td>
+                    </TableRow>
+            }
+        }
+        </Table>
+    </Body>
+</Loading>
+<button class="btn btn-primary @(DocumentSelected == null && Select==null?"disabled":"")" 
+        @onclick="() => Select(new BidDateAndVersion{Version = DocumentVersionSelected, Area = DocumentSelected.Area, Date = DocumentSelected.Date}) ">
+    Select
+</button>
+
+@code {
+    [Parameter]
+    public IDocumentListAPI api { get; set; }
+    [Parameter]
+    public Company Company { get; set; }
+    [Parameter]
+    public Action<BidDateAndVersion> Select { get; set; }
+    List<BidDateAndVersion> Document { get; set; }
+    BidDateAndVersion DocumentSelected { get; set; }
+    int DocumentVersionSelected { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Document = await api.GetRawBidDatesByTheCompany(Company.PublicIdentifier);
+    }
+
+    private void SelectDocument(BidDateAndVersion Document, int version)
+    {
+        DocumentSelected = Document;
+        DocumentVersionSelected = version;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,43 @@
+﻿@using EnergyBidding.Shared.Documents.XmlDocument
+@using EnergyBidding.Shared.Documents.Heatters
+<div>
+    <div>
+        <label>Document Identification: @MessageHead.DocumentIdentification.v</label>
+    </div>
+    <div>
+        <label>Document Version @MessageHead.DocumentVersion.v</label><br/>
+    </div>
+    <div>
+        <label>Document Type @MessageHead.DocumentType.v</label>
+    </div>
+    <div>
+        <label>Process Type</label><br/>
+        <SelectElement Collection="@(new List<string>{"DK-OP","DK-TIS-SCH"})" @bind-Value="@MessageHead.ProcessType.v"></SelectElement>
+    </div>
+    @foreach (BidDocumentBidMessage message in BidMessage)
+    {
+        <div class="border-top">
+            <label>Bid Message @message.BidIdentification.v</label>
+            <div>
+                <label>ContractIdentification</label><br />
+                <SelectElement Collection="@(new List<string> {"Contract-2010-12"})" @bind-Value="@MessageHead.ProcessType.v"></SelectElement>
+            </div>
+            <div>
+                <label>Start Gradient</label><br />
+                <input type="number" Value="@message.StartGradient.v"/>
+            </div>
+            <div>
+                <label>Stop Gradient</label><br/>
+                <input type="number" Value="@message.StopGradient.v"/>
+            </div>
+        </div>
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public MessageHeader MessageHead { get; set; }
+    [Parameter]
+    public BidDocumentBidMessage[] BidMessage { get; set; }
+}

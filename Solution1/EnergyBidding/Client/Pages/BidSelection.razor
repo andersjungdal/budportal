@@ -1,0 +1,139 @@
+﻿@page "/Bid"
+@using ModelsInterfaces
+@using EnergyBidding.Client.Elements
+@using ModelsInterfaces.Enums
+@using System.Reflection
+@using System.Security.Cryptography.X509Certificates
+@using CalenderPlayground
+@using System.ComponentModel.Design
+@using BlazorBusinessLogic
+@using BlazorBusinessLogic.ApiConnections
+@using BlazorBusinessLogic.Models.General
+@using EnergyBidding.Shared
+@inject RawBidApiConnection RawBidApi
+@inject NavigationManager nav
+@inject StateHolder State
+@inject CompanyApiConnection CompanyApi
+@inject AreasApiConnections AreasApi
+
+<Loading DataIsNotAvaiable="Companies == null">
+    <Body>
+        <Calender MontChanged="LoadMonth" SelectedDayChanged="x=>{ CurrentMonth = (x.Year != CurrentMonth.Year || x.Month != CurrentMonth.Month) ? x : CurrentMonth; }" >
+            <DayTemplate Context="day">
+
+                @if (ThisMonth.FirstOrDefault(x => x.Date.Equals(day)) != null)
+                {
+                    foreach (RawBid bid in ThisMonth.FindAll(x => x.Date.Equals(day)))
+                    {
+                        <div class="btn btn-outline-info" @ondblclick="() => Nave(bid.PublicIdentifier)">
+                            @bid.Area.Type
+                            <div class="d-flex flex-wrap">
+                                <FlexBidSumElement Bid="bid"></FlexBidSumElement>
+                            </div>
+                        </div>
+                    }
+                }
+                else if (State.User.Role <= Role.Bid)
+                {
+                    foreach (Area aktion in Areas.Value)
+                    {
+                        <div class="btn btn-outline-info" @ondblclick="() => Nave(day, aktion.PublicIdentifier)">
+                            @aktion.Type
+                        </div>
+                    }
+                }
+            </DayTemplate>
+        </Calender>
+        @if (Companies.Value.Count > 1)
+        {
+            <SelectElement T="BlazorBusinessLogic.Models.General.Company" Collection="Companies.Value" @bind-Value="Company" GetValue="(x => x.Name)"></SelectElement>
+        }
+    </Body>
+</Loading>
+
+
+
+@code {
+    public ICaching<List<BlazorBusinessLogic.Models.General.Company>> Companies { get; set; }
+
+    public BlazorBusinessLogic.Models.General.Company company;
+    public BlazorBusinessLogic.Models.General.Company Company
+    {
+        get { return company; }
+        set
+        {
+            if (company != value)
+            {
+                company = value;
+                LoadMonth(CurrentMonth);
+            }
+            StateHasChanged();
+        }
+    }
+    public ICaching<List<Area>> Areas { get; set; }
+    List<RawBid> ThisMonth { get; set; } = new List<RawBid>();
+
+
+    private DateTime CurrentMonth { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Areas = await AreasApi.GetWithCache();
+        ICompany co = await CompanyApi.GetOwner();
+        if (State.User.Company?.PublicIdentifier == co.PublicIdentifier)
+        {
+            if (State.PubUp == null)
+            {
+                if (State.User.Company.PublicIdentifier == (await CompanyApi.GetOwner()).PublicIdentifier)
+                {
+
+                    Companies = (await CompanyApi.GetCompanyWithCache());
+                    Companies.Value.Remove(Companies.Value.Find(x => x.PublicIdentifier == (CompanyApi.GetOwner().Result).PublicIdentifier));
+                }
+                else
+                {
+                    Companies = new Caching<List<BlazorBusinessLogic.Models.General.Company>> { Value = new List<BlazorBusinessLogic.Models.General.Company>{ State.User.Company }};
+                }
+            }
+        }
+        else
+        {
+            Companies = new Caching<List<BlazorBusinessLogic.Models.General.Company>> { Value = new List<BlazorBusinessLogic.Models.General.Company>{ State.User.Company }};
+
+        }
+        company = Companies.Value[0];
+
+    }
+    public void Nave(Guid id)
+    {
+        nav.NavigateTo($"/Bid/{id}");
+    }
+    public void Nave(DateTime date,Guid area)
+    {
+        nav.NavigateTo($"/NewBid/{area}/{date.ToString("yyyy-MM-dd")}");
+    }
+
+    public async void LoadMonth(DateTime month)
+    {
+        List<RawBid> RawBidMonth = (await RawBidApi.GetByCompany(company.PublicIdentifier))?.FindAll(x => x.Date.Year == month.Year
+                                                                                                                    && x.Date.Month == month.Month)??new List<RawBid>();
+        ThisMonth = new List<RawBid>();
+        foreach (RawBid loading in RawBidMonth)
+        {
+            RawBid old = ThisMonth.FirstOrDefault(x => x.PublicIdentifier == loading.PublicIdentifier);
+            if (old == null)
+            {
+                ThisMonth.Add(loading);
+            }
+            else
+            {
+                if (old.Version < loading.Version)
+                {
+                    ThisMonth.Remove(old);
+                    ThisMonth.Add(loading);
+                }
+            }
+        }
+        StateHasChanged();
+    }
+}

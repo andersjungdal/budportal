@@ -1,0 +1,26 @@
+﻿@using BlazorBusinessLogic.Models.General
+@using C1.Blazor.Grid
+@using System.Collections.ObjectModel
+@using BlazorBusinessLogic.ApiConnections
+@inject UserApiConnection UserApiConnection
+
+<FlexGrid ItemsSource="users" AutoGenerateColumns="false">
+    <FlexGridColumns>
+        <GridColumn Binding="UserName" MinWidth="110" Width="GridLength.Star" />
+        <GridColumn Binding="Company" MinWidth="110" Width="GridLength.Star" />
+        <GridColumn Binding="Role" MinWidth="110" Width="GridLength.Star" />
+    </FlexGridColumns>
+</FlexGrid>
+
+@code {
+        [Parameter]
+        public Company Company { get; set; }
+        ObservableCollection<User> users { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = new ObservableCollection<User>(await UserApiConnection.GetByCompany(Company.PublicIdentifier));
+        StateHasChanged();
+    }
+
+}

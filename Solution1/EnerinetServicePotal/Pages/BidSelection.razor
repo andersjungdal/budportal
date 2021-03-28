@@ -1,0 +1,108 @@
+﻿@page "/Bid"
+@using ModelsInterfaces
+@using ModelsInterfaces.Enums
+@using System.Reflection
+@using System.Security.Cryptography.X509Certificates
+@using CalenderPlayground
+@using System.ComponentModel.Design
+@using BlazorBuisnessLogic.Net5
+@using BlazorBuisnessLogic.Net5.ApiConnections
+@using BlazorBuisnessLogic.Net5.Models.General
+@using EnergyBidding.Shared
+@using EnerinetServicePotal.Elements
+@using Grid.Tables.Cells
+@using Grid.Tables
+@inject RawBidApiConnection RawBidApi
+@inject NavigationManager nav
+@inject StateHolder State
+@inject CompanyApiConnection CompanyApi
+@inject AreasApiConnections AreasApi
+
+<Loading DataIsNotAvaiable="Companies == null&&Areas == null">
+    <Body>
+        <Calender>
+            <DayTemplate Context="day">
+                @foreach (var bid in Bids.FindAll(x => x.Date.Equals(day)))
+                {
+                    <span class="float-right flex-nowrap oi oi-media-record" style="color: @(bid.Area.PublicIdentifier == Areas[0].PublicIdentifier ? "green" : "darkblue")"></span>
+                }
+                <div>
+                    @foreach (Area aktion in Areas)
+                    {
+                        <div class="btn btn-outline-info" @ondblclick="() => Nave(day, aktion.PublicIdentifier)">
+                            @aktion.Type
+                        </div>
+                    }
+                </div>
+            </DayTemplate>
+        </Calender>
+        @if (Companies.Count > 1)
+        {
+            <SelectElement Collection="Companies" @bind-Value="Company" GetValue="(x => x.Name)"></SelectElement>
+        }
+    </Body>
+</Loading>
+
+
+
+@code {
+    public List<BlazorBuisnessLogic.Net5.Models.General.Company> Companies { get; set; }
+    private List<BidDateAndVersion> Bids { get; set; } = new List<BidDateAndVersion>();
+    private BlazorBuisnessLogic.Net5.Models.General.Company company;
+    public BlazorBuisnessLogic.Net5.Models.General.Company Company
+    {
+        get { return company; }
+        set
+        {
+            company = value;
+            LoadBids();
+            StateHasChanged();
+        }
+    }
+    public List<Area> Areas { get; set; }
+
+
+    private DateTime currentMonth { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Areas = await AreasApi.GetWithCache();
+        if (await IsChosenCompanyOwnerCompany(State.User.Company))
+        {
+           await AddCompaniesExceptOwnerCompany();
+        }
+        else
+        {
+            Companies = new List<BlazorBuisnessLogic.Net5.Models.General.Company> { State.User.Company };
+        }
+        company = Companies[0];
+        LoadBids();
+
+    }
+    private async Task<bool> IsChosenCompanyOwnerCompany(BlazorBuisnessLogic.Net5.Models.General.Company company)
+        => company.PublicIdentifier == (await CompanyApi.GetOwner()).PublicIdentifier;
+
+    //Er metodens navn rigtigt i forhold til hvad den gør?
+    private async Task AddCompaniesExceptOwnerCompany()
+    {
+        Companies = new List<BlazorBuisnessLogic.Net5.Models.General.Company>();
+        foreach (BlazorBuisnessLogic.Net5.Models.General.Company company in (await CompanyApi.GetCompanyWithCache()))
+        {
+            if (!await IsChosenCompanyOwnerCompany(company))
+            {
+                Companies.Add(company);
+            }
+        }
+    }
+
+    private async Task LoadBids()
+    {
+        Bids = await RawBidApi.GetRawBidDatesByTheCompany(Company.PublicIdentifier)?? new List<BidDateAndVersion>();
+        StateHasChanged();
+    }
+    public void Nave(DateTime date,Guid area)
+    {
+        nav.NavigateTo($"/NewBid/{area}/{date.ToString("yyyy-MM-dd")}");
+    }
+
+}

@@ -1,0 +1,15 @@
+﻿@using BlazorBuisnessLogic.Net5
+@using BlazorBuisnessLogic.Net5.Models.UI
+@inject StateHolder State;
+<div class="rounded bg-light border border-danger position-fixed" style=" padding: 20px; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+    <div class="text-info" style="white-space: pre-wrap;">@State.PubUp.Message</div>
+    @foreach (PubUpButtons buttons in State.PubUp.Buttons)
+    {
+        <button row="1" class="btn btn-primary" @onclick="buttons.Event">@buttons.Text</button>
+    }
+</div>
+
+
+@code {
+
+}

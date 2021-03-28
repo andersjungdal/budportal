@@ -1,0 +1,285 @@
+<BidDocument xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.energinet.dk/schemas/BalRespXML/BidDocument/v13">
+	<MessageHeader xmlns="http://www.energinet.dk/schemas/BalRespXML/MessageHeader/v13">
+		<DocumentIdentification v="DOC1234" />
+		<DocumentVersion v="1" />
+		<DocumentType v="A24" />
+		<ProcessType v="DK-OP" />
+		<SenderIdentification codingScheme="A10" v="1" />
+		<SenderRole v="A08" />
+		<ReceiverIdentification codingScheme="A10" v="5790000432752" />
+		<ReceiverRole v="A04" />
+		<DocumentDateTime v="2020-09-24T12:00:00" />
+		<ScheduleTimeInterval v="2020-09-23T22:00Z/2020-09-24T22:00Z" />
+		<Domain codingScheme="A01" v="10YDK-2---------" />
+	</MessageHeader>
+	<BidMessage>
+		<BidIdentification v="ID101" />
+		<ContractIdentification v="Contract-2000-12" />
+		<BusinessType v="BID" />
+		<MeasurementUnitQuantity v="MAW" />
+		<MeasurementUnitPrice v="MWH" />
+		<Currency v="EUR" />
+		<StartGradient v="100" />
+		<StopGradient v="100" />
+		<DeadTime v="PT10M" />
+		<Period>
+			<BidInterval v="2020-08-04T22:00Z/2020-08-05T22:00Z" />
+			<Resolution v="PT1H" />
+			<Interval>
+				<Position v="1" />
+				<Price v="30" />
+				<Quantity v="120" />
+			</Interval>
+			<Interval>
+				<Position v="2" />
+				<Price v="30" />
+				<Quantity v="120" />
+			</Interval>
+			<Interval>
+				<Position v="3" />
+				<Price v="40" />
+				<Quantity v="160" />
+			</Interval>
+			<Interval>
+				<Position v="4" />
+				<Price v="60" />
+				<Quantity v="226" />
+			</Interval>
+			<Interval>
+				<Position v="5" />
+				<Price v="7" />
+				<Quantity v="30" />
+			</Interval>
+			<Interval>
+				<Position v="6" />
+				<Price v="30" />
+				<Quantity v="320" />
+			</Interval>
+			<Interval>
+				<Position v="7" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="8" />
+				<Price v="540" />
+				<Quantity v="340" />
+			</Interval>
+			<Interval>
+				<Position v="9" />
+				<Price v="60" />
+				<Quantity v="540" />
+			</Interval>
+			<Interval>
+				<Position v="10" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="11" />
+				<Price v="40" />
+				<Quantity v="320" />
+			</Interval>
+			<Interval>
+				<Position v="12" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="13" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="14" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="15" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="16" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="17" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="18" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="19" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="20" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="21" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="22" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="23" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="24" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+		</Period>
+	</BidMessage>
+	<BidMessage>
+		<BidIdentification v="ID102" />
+		<ContractIdentification v="Contract-2000-12" />
+		<BusinessType v="BID" />
+		<MeasurementUnitQuantity v="MAW" />
+		<MeasurementUnitPrice v="MWH" />
+		<Currency v="EUR" />
+		<StartGradient v="100" />
+		<StopGradient v="100" />
+		<DeadTime v="PT10M" />
+		<Period>
+			<BidInterval v="2020-08-04T22:00Z/2020-08-05T22:00Z" />
+			<Resolution v="PT1H" />
+			<Interval>
+				<Position v="1" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="2" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="3" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="4" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="5" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="6" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="7" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="8" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="9" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="10" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="11" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="12" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="13" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="14" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="15" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="16" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="17" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="18" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="19" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="20" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="21" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="22" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="23" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+			<Interval>
+				<Position v="24" />
+				<Price v="0" />
+				<Quantity v="0" />
+			</Interval>
+		</Period>
+	</BidMessage>
+</BidDocument>

@@ -1,0 +1,78 @@
+﻿@using ModelsInterfaces
+@using ModelsInterfaces.Enums
+@using System.Text.Json
+@using BlazorBuisnessLogic.Net5
+@using BlazorBuisnessLogic.Net5.ApiConnections
+@using BlazorBuisnessLogic.Net5.Models.General
+@using EnerinetServicePotal.Elements
+@using EnerinetServicePotal.Shared
+@inject StateHolder state;
+@inject CompanyApiConnection CompanyApi
+
+
+<h3>EnergiNet</h3>
+<Loading DataIsNotAvaiable="Companies == null">
+    <Body>
+        <div>
+            <Table ColumnsName="@columns">
+
+                @foreach (Company company in Companies)
+                {
+                    @*@if (company.PublicIdentifier == state.User.Company.PublicIdentifier)
+                        {
+                            continue;
+                        }*@
+                    <CompanyRow AbleToSee="@(state.User.Role <= Role.Bid)" Company="@company" Delete="Delete">
+                    </CompanyRow>
+                }
+                @if (state.User.Role <= Role.Admin)
+                {
+                    <tr>
+                        <button class="btn btn-primary" @onclick="() => CompanyClicked = !CompanyClicked"><span class="oi oi-plus"></span></button>
+                    </tr>
+                }
+            </Table>
+            @if (CompanyClicked)
+            {
+                <div>
+                    <CompanyModel OnSubmit="NewCompany"></CompanyModel>
+                </div>
+            }
+        </div>
+    </Body>
+</Loading>
+@code {
+
+    public List<Company> Companies { get; set; }
+    private List<string> columns = new List<string>() { "Company", "Address" };
+    public bool CompanyClicked { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (state.User.Role <= Role.Admin)
+        {
+            columns.Add("");
+        }
+        Companies = await CompanyApi.Get();
+    }
+
+    public async void NewCompany(ICompany<XmlTemplate> com)
+    {
+
+        Company response = await CompanyApi.Create(com);
+        if (response != null)
+        {
+            Companies.Add(response);
+            StateHasChanged();
+        }
+    }
+
+    public async void Delete(Company company)
+    {
+        if (await CompanyApi.Delete(company.PublicIdentifier))
+        {
+            Companies.Remove(company);
+            StateHasChanged();
+        }
+    }
+}

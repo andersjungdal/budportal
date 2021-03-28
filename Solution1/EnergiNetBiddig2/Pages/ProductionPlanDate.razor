@@ -1,0 +1,92 @@
+﻿@page "/ProductionPlanDate"
+@using CalenderPlayground
+@using Syncfusion.Blazor.Calendars
+@using BlazorBusinessLogic.Models.General
+@using BlazorBusinessLogic.ApiConnections
+@using BlazorBusinessLogic
+@using EnergiNetBiddig2.Elements
+@inject NavigationManager nave
+@inject AreasApiConnections AreasApi
+@inject CompanyApiConnection CompanyApi
+@inject ProductionPlanApiConnection ProductionPlanApi
+@inject StateHolder state
+<h3>ProductionPlanDate</h3>
+<div>
+    <Loading DataIsNotAvaiable="Areas==null&&Companies==null">
+        <Body>
+        <SelectElement T="BlazorBusinessLogic.Models.General.Company" Collection="Companies" 
+                       @bind-Value="CompanySelected"GetValue="x=>x.Name"></SelectElement>
+            <Calender>
+                <DayTemplate>
+                    @foreach (var bid in Bids.FindAll(x => x.Date.Equals(context)))
+                    {
+                        <span class="float-right flex-nowrap oi oi-media-record" style="color: @(bid.Area.PublicIdentifier == Areas[0].PublicIdentifier ? "green" : "darkblue")"></span>
+                    }
+
+                    <div>
+                        @foreach (Area area in Areas)
+                        {
+                            <div class="btn btn-outline-info"
+                                 @ondblclick="() => Nave(area.PublicIdentifier, CompanySelected.PublicIdentifier, context)">@area.Type</div>
+                        }
+                    </div>
+                </DayTemplate>
+            </Calender>
+        </Body>
+    </Loading>
+</div>
+
+@code {
+    private BlazorBusinessLogic.Models.General.Company companySelected;
+    public BlazorBusinessLogic.Models.General.Company CompanySelected
+    {
+        get { return companySelected;}
+        set
+        {
+            companySelected = value;
+            LoadBids();
+        }
+    }
+    public List<Area> Areas { get; set; }
+    public List<BlazorBusinessLogic.Models.General.Company> Companies { get; set; }
+    public List<BidDateAndVersion> Bids { get; set; } = new List<BidDateAndVersion>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Areas = (await AreasApi.GetWithCache());
+        if (await IsChosenCompanyOwnerCompany(state.User.Company))
+        {
+            await AddCompaniesExceptOwnerCompany();
+        }
+        else
+        {
+            Companies = new List<BlazorBusinessLogic.Models.General.Company>{ state.User.Company };
+        }
+        CompanySelected = Companies[0];
+
+    }
+    private async Task<bool> IsChosenCompanyOwnerCompany(BlazorBusinessLogic.Models.General.Company company)
+        => company.PublicIdentifier == (await CompanyApi.GetOwner()).PublicIdentifier;
+
+    //Er metodens navn rigtigt i forhold til hvad den gør?
+    private async Task AddCompaniesExceptOwnerCompany()
+    {
+        Companies =await CompanyApi.GetCompanyWithCache();
+        BlazorBusinessLogic.Models.General.Company company = await CompanyApi.GetOwner();
+        company = Companies.FirstOrDefault(x => company.PublicIdentifier.Equals(x.PublicIdentifier));
+        if (company != null)
+        {
+            Companies.Remove(company);
+        }
+    }
+
+    private async Task LoadBids()
+    {
+        Bids = await ProductionPlanApi.GetRawBidDatesByTheCompany(CompanySelected.PublicIdentifier)?? new List<BidDateAndVersion>();
+        StateHasChanged();
+    }
+    public void Nave(Guid areaId, Guid companyId, DateTime date)
+    {
+        nave.NavigateTo($"/ProductionPlan/{areaId}/{companyId}/{date.ToString("yyyy-MM-dd")}");
+    }
+}

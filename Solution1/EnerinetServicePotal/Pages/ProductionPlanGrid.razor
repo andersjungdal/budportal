@@ -1,0 +1,535 @@
+﻿@page "/ProductionPlan/{AreaId:guid}/{CompanyId:guid}/{DayInput:datetime}"
+@using System.Collections.ObjectModel;
+@using System.Globalization
+@using System.IO
+@using System.Net
+@using System.Security.Principal
+@using System.Text
+@using System.Xml
+@using System.Xml.Serialization
+@using BlazorBuisnessLogic.Net5
+@using BlazorBuisnessLogic.Net5.ApiConnections
+@using BlazorBuisnessLogic.Net5.Extensions
+@using BlazorBuisnessLogic.Net5.Models.General
+@using BlazorBuisnessLogic.Net5.Models.General.LockData
+@using BlazorBuisnessLogic.Net5.Models.UI
+@using BlazorBuisnessLogic.Net5.Models.XL
+@using ModelsInterfaces
+@using Syncfusion.Blazor.Diagrams
+@using EnerinetServicePotal.Elements
+@using Syncfusion.XlsIO
+@using EnergyBidding.Shared.Documents.ProductionPlanXml
+@using Grid.Tables
+@using Grid.Tables.Cells
+
+@inject ProductionPlanApiConnection ProductionPlanApi
+@inject CompanyApiConnection CompanyApi
+@inject AreasApiConnections AreasApi
+@inject XmlTemplateApiConnection XmlTemplateApi
+@inject StateHolder State
+@inject IJSRuntime JS
+
+<h3>Productionplan</h3>
+@if (Areas != null)
+{
+    <SelectElement T="Area" Collection="Areas" @bind-Value="AreaSelected" GetValue="(x=> x.Type)"></SelectElement>
+}
+<input class="text-primary" type="date" @bind="DaySelected" />
+@if (Companies != null && Companies.Count > 1)
+{
+    @* TODO: Get the energinet name for a dynamisk source *@
+    <SelectElement T="BlazorBuisnessLogic.Net5.Models.General.Company" Collection="Companies" @bind-Value="CompanySelected" GetValue="(x=> x.Name)"></SelectElement>
+}
+<input type="checkbox" @bind="ShowLockValues" />
+<button class="btn btn-primary" @onclick="Refresh">
+    <span class="oi oi-loop-circular"></span>
+</button>
+<button class="btn btn-primary" disabled="@(operationalScheduleDocument == null)" @onclick="DownloadExcel">
+    <span class="oi oi-cloud-download"></span>
+</button>
+<button class="btn btn-primary" disabled="@(DaySelected.Year < DateTime.UtcNow.Year || (DaySelected.Year == DateTime.UtcNow.Year && DaySelected.DayOfYear < DateTime.UtcNow.DayOfYear))" @onclick="()=>LoadEarlierDateButtonClicked=true">
+    Load earlier bids
+</button>
+<button class="btn btn-primary" disabled="@(operationalScheduleDocument == null)" @onclick="Save">
+    Save
+</button>
+<button class="btn btn-primary " disabled="@(operationalScheduleDocument == null)" @onclick="@(()=>NewColumnButtonClicked=true)">
+    New Column <span class="oi oi-plus"></span>
+</button>
+<Loading DataIsNotAvaiable="Body==null&&HorizontalHeader==null&&VerticalHeader==null">
+    <Body>
+        <div style="max-width: 80vw; height: 85vh">
+            <GridTabel Body="Body"
+                       HorizontalHeader="HorizontalHeader"
+                       VerticalHeader="VerticalHeader"
+                       OnValueChange="GridValueChanged">
+            </GridTabel>
+        </div>
+    </Body>
+</Loading>
+@if (LoadEarlierDateButtonClicked)
+{
+    <div class="rounded position-absolute border border-primary" style="padding: 20px; top: 50%; left: 50%; width: 500px; height: 500px; background: white; transform: translate(-50%, -50%); z-index: 4;">
+        <button class="btn btn-outline-danger border-0 float-right" @onclick="()=>LoadEarlierDateButtonClicked=false"><span class="oi oi-x"></span></button>
+        <div class="overflow-auto h-100">
+            <SelectEaliereDocuments api="ProductionPlanApi" Company="CompanySelected" Select="LoadNowElement"></SelectEaliereDocuments>
+        </div>
+    </div>
+}
+@if (NewColumnButtonClicked)
+{
+    <div class="rounded position-absolute border border-primary" style="padding: 20px; top: 50%; left: 50%; width: 500px; height: 500px; background: white; transform: translate(-50%, -50%); z-index: 4;">
+        <button class="btn btn-outline-danger border-0 float-right" @onclick="()=>NewColumnButtonClicked=false"><span class="oi oi-x"></span></button>
+        <div class="overflow-auto h-100">
+            <SelectProductionPlanHeaterName NewColumn="NewColumn" Company="CompanySelected" Area="AreaSelected" OperationalScheduleDocument="operationalScheduleDocument">
+            </SelectProductionPlanHeaterName>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Guid AreaId { get; set; }
+    [Parameter]
+    public Guid CompanyId { get; set; }
+    [Parameter]
+    public DateTime DayInput { get; set; }
+
+    List<ProductionPlanColumn> LockProductionPlan { get; set; }
+
+    private bool LoadEarlierDateButtonClicked { get; set; } = false;
+    private bool NewColumnButtonClicked { get; set; } = false;
+
+    //Selected
+    private Area areaSelected;
+    public Area AreaSelected
+    {
+        get { return areaSelected; }
+        set
+        {
+            areaSelected = value;
+            Refresh();
+        }
+    }
+    private BlazorBuisnessLogic.Net5.Models.General.Company companySelected;
+    public BlazorBuisnessLogic.Net5.Models.General.Company CompanySelected
+    {
+        get { return companySelected; }
+        set
+        {
+            companySelected = value;
+            Refresh();
+        }
+    }
+    private DateTime daySelected;
+    public DateTime DaySelected
+    {
+        get { return daySelected; }
+        set
+        {
+            daySelected = value;
+            Refresh();
+        }
+    }
+    private bool showLockValues = true;
+    public bool ShowLockValues {
+        get { return showLockValues; }
+        set
+        {
+            showLockValues = value;
+            GenerateGrid(operationalScheduleDocument);
+        }
+    }
+
+
+    // Input values
+    private Guid productionPlanPublicIdentifier { get; set; }
+    private int version { get; set; }
+
+    public int Interval { get; set; } = 5;
+    public List<BlazorBuisnessLogic.Net5.Models.General.Company> Companies { get; set; }
+    public List<Area> Areas { get; set; }
+    private OperationalScheduleDocument operationalScheduleDocument { get; set; }
+
+    //Table Data
+    public List<List<HCell>> VerticalHeader { get; set; }
+    public List<List<HCell>> HorizontalHeader { get; set; }
+    public List<List<ICell>> Body { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Task<List<Area>> areaTask = AreasApi.GetWithCache();
+
+        if (await IsChosenCompanyOwnerCompany(State.User.Company))
+        {
+            var ownererTask = CompanyApi.GetOwner();
+            var Colection = await CompanyApi.GetCompanyWithCache();
+            Companies = new List<BlazorBuisnessLogic.Net5.Models.General.Company>();
+            var owner = await ownererTask;
+            foreach (var VARIABLE in Colection)
+            {
+                if (!VARIABLE.PublicIdentifier.Equals(owner.PublicIdentifier))
+                {
+                    Companies.Add(VARIABLE);
+                }
+            }
+        }
+        else
+        {
+            Companies = new List<BlazorBuisnessLogic.Net5.Models.General.Company>();
+            Companies.Add(State.User.Company);
+        }
+        companySelected = Companies.Find(x => x.PublicIdentifier == CompanyId);
+        daySelected = DayInput;
+        Areas = await areaTask;
+        areaSelected = Areas.Find(x => x.PublicIdentifier == AreaId);
+
+        ProductionPlan plan = await GenerateProductionPlan();
+        await GenerateScheduleDocument(plan);
+        GenerateGrid(operationalScheduleDocument);
+
+    }
+    private async Task<bool> IsChosenCompanyOwnerCompany(BlazorBuisnessLogic.Net5.Models.General.Company company)
+        => company.PublicIdentifier == (await CompanyApi.GetOwner()).PublicIdentifier;
+
+
+    public async void Refresh()
+    {
+        ProductionPlan plan = await GenerateProductionPlan();
+        Task<List<ProductionPlanColumn>> loadProductionPlanCollums = null;
+        if (!plan.PublicIdentifier.Equals(Guid.Empty))
+        {
+            loadProductionPlanCollums = ProductionPlanApi.GetProductionPlanLockCells(plan.PublicIdentifier);
+        }
+        await GenerateScheduleDocument(plan);
+        if (loadProductionPlanCollums != null)
+        {
+            LockProductionPlan = await loadProductionPlanCollums;
+        }
+        else
+        {
+            LockProductionPlan = null;
+        }
+
+        GenerateGrid(operationalScheduleDocument);
+        StateHasChanged();
+    }
+
+    public async Task GenerateScheduleDocument(ProductionPlan productionPlan)
+    {
+        XmlSerializer serializer = new XmlSerializer(typeof(OperationalScheduleDocument));
+        using (TextReader reader = new StringReader(productionPlan.XmlString))
+        {
+            operationalScheduleDocument = (OperationalScheduleDocument)serializer.Deserialize(reader);
+        }
+    }
+
+    private async Task<ProductionPlan> GenerateProductionPlan()
+    {
+        ProductionPlan productionPlans = await ProductionPlanApi.GetByCompanyAreaAndDate(CompanySelected.PublicIdentifier, AreaSelected.PublicIdentifier, DaySelected, new HttpStatusCode[] { HttpStatusCode.BadRequest });
+        if (productionPlans == null)
+        {
+            Task<XmlTemplate> xmlTask = XmlTemplateApi.GetProductionPlanTempByCompany(CompanySelected.PublicIdentifier);
+            version = 0;
+            productionPlanPublicIdentifier = Guid.Empty;
+            var template = (await xmlTask);
+            var test = template.XMLTemplate;
+            return new ProductionPlan { XmlString = test };
+        }
+        productionPlanPublicIdentifier = productionPlans.PublicIdentifier;
+        version = productionPlans.Version;
+        return productionPlans;
+    }
+
+    public async void GridValueChanged(ValueChangeEventArgs value)
+    {
+
+        operationalScheduleDocument.OperationalScheduleTimeSeries[value.X].Period.Interval[value.Y - 1].Quantity.V
+            = String.IsNullOrEmpty(value.Value) ? 0.0 : double.Parse(value.Value);
+        await GenerateBody(operationalScheduleDocument);
+        StateHasChanged();
+    }
+
+    public void GenerateGrid(OperationalScheduleDocument plan)
+    {
+        Task[] GenerateValues = new Task[]
+        {
+                GenerateHorizontalHeader(plan), GenerateVerticalHeader(), GenerateBody(plan)
+            };
+        Task.WaitAll(GenerateValues);
+    }
+
+    private async Task GenerateBody(OperationalScheduleDocument plan)
+    {
+        Body = new List<List<ICell>>();
+
+        for (int x = 0; x < plan.OperationalScheduleTimeSeries.Count; x++)
+        {
+            ProductionPlanColumn column = null;
+            if (LockProductionPlan != null && showLockValues)
+            {
+                column = LockProductionPlan.FirstOrDefault(l => l.CollumName.Equals(plan.OperationalScheduleTimeSeries[x].UnitIdentification.V));
+            }
+            for (int y = 0; y < plan.OperationalScheduleTimeSeries[x].Period.Interval.Count; y++)
+            {
+                if (Body.Count <= y)
+                {
+                    Body.Add(new List<ICell>());
+                }
+
+
+                if (column?.Rows.FirstOrDefault(c => c.Index == y + 1) != null)
+                {
+                    Body[y].Add(new Cell
+                    { Value = column.Rows[y].Quantity.ToString(), InputType = "number" });
+                }
+                else
+                {
+                    Body[y].Add(new Cell
+                    {
+                        Value = plan.OperationalScheduleTimeSeries[x].Period.Interval[y].Quantity.V.ToString(),
+                        InputType = "number"
+                    });
+                }
+                DateTime date = DateTime.UtcNow.AddHours(1).AddMinutes(5);
+                if (daySelected.DayOfYear == DateTime.UtcNow.DayOfYear && daySelected.Day == DateTime.UtcNow.Day && date.Hour * 60 + date.Minute > y * Interval)
+                {
+                    Body[y][x].Unchangeable = true;
+                }
+
+            }
+        }
+        var e = new List<ICell>();
+
+        foreach (var timeSerie in plan.OperationalScheduleTimeSeries)
+        {
+            e.Add(new Cell
+            {
+                Value = timeSerie.Period.Interval.Sum(x => x.Quantity.V).ToString(),
+                Unchangeable = true
+            });
+        }
+        Body.Insert(0, e);
+        Body.Add(e);
+    }
+
+    private async Task GenerateVerticalHeader()
+    {
+        VerticalHeader = new List<List<HCell>>();
+        DateTime day = DateTime.Parse($"{DaySelected.ToString("yyyy/MM/dd")} 00:00:00AM", new CultureInfo("da-DK"));
+        while (day.Day == DaySelected.Day)
+        {
+            string value = day.ToString("HH:mm");
+            day = day.AddMinutes(Interval);
+            value += " - " + day.ToString("HH:mm").Replace("00:00", "24:00");
+            VerticalHeader.Add(new List<HCell> { new HCell { Value = value } });
+        }
+
+        VerticalHeader.Add(new List<HCell> { new HCell { Value = "24:00" } });
+        VerticalHeader.Insert(0, new List<HCell> { new HCell { Value = "Sum" } });
+        VerticalHeader.Add(new List<HCell> { new HCell { Value = "Sum" } });
+    }
+
+    private async Task GenerateHorizontalHeader(OperationalScheduleDocument plan)
+    {
+        HorizontalHeader = new List<List<HCell>>();
+        var row1 = new List<HCell>();
+        var row2 = new List<HCell>();
+        HCell CurentCell1 = null;
+        foreach (var TimeSerise in plan.OperationalScheduleTimeSeries)
+        {
+            //Header
+            row2.Add(new HCell { Value = TimeSerise.BusinessType.V + " MW" });
+            if (TimeSerise.UnitIdentification != null)
+            {
+
+                if (CurentCell1 == null)
+                {
+                    CurentCell1 = new HCell { Value = TimeSerise.UnitIdentification.V, Columspan = 0 };
+                }
+
+                if (!CurentCell1.Value.Equals(TimeSerise.UnitIdentification.V))
+                {
+                    row1.Add(CurentCell1);
+                    CurentCell1 = new HCell { Value = TimeSerise.UnitIdentification.V, Columspan = 0 };
+                }
+            }
+            else
+            {
+                if (CurentCell1 == null)
+                {
+                    CurentCell1 = new HCell { Value = TimeSerise.UnitTypeIdentification.V, Columspan = 0 };
+                }
+
+                if (!CurentCell1.Value.Equals(TimeSerise.UnitTypeIdentification.V))
+                {
+                    row1.Add(CurentCell1);
+                    CurentCell1 = new HCell { Value = TimeSerise.UnitTypeIdentification.V, Columspan = 0 };
+                }
+
+            }
+            CurentCell1.Columspan++;
+        }
+        row1.Add(CurentCell1);
+        HorizontalHeader.Add(row1);
+        HorizontalHeader.Add(row2);
+    }
+
+    public async Task DownloadExcel()
+    {
+        //TODO Find a fix for Hetters not rendering
+        OperationalScheduleDocument ProductionPlanXmlDocument = operationalScheduleDocument;
+        using (ExcelEngine excelEngine = new ExcelEngine())
+        {
+            IApplication application = excelEngine.Excel;
+            application.DefaultVersion = ExcelVersion.Excel2016;
+            IWorkbook workbook = XLConverter.ConvertProductionPlanToExcel(ProductionPlanXmlDocument, application);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                //Save the created Excel document to MemoryStream
+                workbook.SaveAs(stream);
+
+                //Download the excel file
+                await JS.InvokeAsync<object>(
+                    "FileIO.SaveXL",
+                    "Sample.xlsx",
+                    Convert.ToBase64String(stream.ToArray()));
+            }
+        }
+        operationalScheduleDocument = ProductionPlanXmlDocument;
+    }
+
+    public async Task Save()
+    {
+        OperationalScheduleDocument localOperationalScheduleDocument = operationalScheduleDocument;
+        if (!localOperationalScheduleDocument.ValidateProductionPlanMinMax())
+        {
+            State.PubUp = new PopUp { Message = "Some of your values is invalid please check your values" };
+            return;
+        }
+        operationalScheduleDocument = null;
+        PopulateDocumentHeader(localOperationalScheduleDocument);
+
+        var updateProductionPlan = PopuleDocumentBody(localOperationalScheduleDocument);
+
+
+        if (version == 0)
+        {
+            updateProductionPlan = await ProductionPlanApi.Create(updateProductionPlan.XmlString);
+        }
+        else
+        {
+            updateProductionPlan = await ProductionPlanApi.Update(updateProductionPlan);
+        }
+        if (updateProductionPlan == null)
+        {
+            operationalScheduleDocument = localOperationalScheduleDocument;
+            return;
+        }
+        version = updateProductionPlan.Version;
+        await GenerateScheduleDocument(updateProductionPlan);
+
+    }
+
+    private ProductionPlan PopuleDocumentBody(OperationalScheduleDocument localOperationalScheduleDocument)
+    {
+        XmlSerializer serializer = new XmlSerializer(typeof(OperationalScheduleDocument));
+        StringWriter stringWriter = new StringWriter();
+        serializer.Serialize(stringWriter, localOperationalScheduleDocument);
+        ProductionPlan updateProductionPlan =
+            new ProductionPlan
+            {
+                PublicIdentifier = productionPlanPublicIdentifier,
+                Area = AreaSelected,
+                Company = CompanySelected,
+                Version = version,
+                Date =
+                    new DateTime(DaySelected.Year, DaySelected.Month, DaySelected.Day),
+                XmlString = stringWriter.ToString()
+            };
+        return updateProductionPlan;
+    }
+
+    private void PopulateDocumentHeader(OperationalScheduleDocument localOperationalScheduleDocument)
+    {
+        char[] domainV = Enumerable.Repeat('-', 16).ToArray();
+        char[] input = $"10Y{AreaSelected.Type}".ToCharArray();
+        for (int i = 0; i < input.Length && i < domainV.Length; i++)
+        {
+            domainV[i] = input[i];
+        }
+
+
+        localOperationalScheduleDocument.MessageHeader.SenderIdentification.v = (ulong)CompanySelected.XmlIdentifier;
+        localOperationalScheduleDocument.MessageHeader.DocumentDateTime.v =
+            new DateTime(DaySelected.Year, DaySelected.Month, DaySelected.Day, 12, 0, 0);
+        localOperationalScheduleDocument.MessageHeader.ScheduleTimeInterval.v
+            = $"{DaySelected.AddDays(-1).ToString("yyyy-MM-dd")}T22:00Z/{DaySelected.ToString("yyyy-MM-dd")}T22:00Z";
+        localOperationalScheduleDocument.MessageHeader.Domain.v = new string(domainV);
+    }
+
+    public async void LoadNowElement(BidDateAndVersion bidDate)
+    {
+        ProductionPlan plan = (await ProductionPlanApi.GetByCompanyVersionAreaAndDate(CompanySelected.PublicIdentifier,
+            bidDate.Area.PublicIdentifier, bidDate.Date, bidDate.Version));
+
+        OperationalScheduleDocument oldDocument = operationalScheduleDocument;
+        await GenerateScheduleDocument(plan);
+        int oldCount = oldDocument.OperationalScheduleTimeSeries.Count - operationalScheduleDocument.OperationalScheduleTimeSeries.Count;
+
+        for (int i = 0; i < oldCount; i++)
+        {
+            if (operationalScheduleDocument.OperationalScheduleTimeSeries.FirstOrDefault(x => x.TimeSeriesIdentification.V.Equals(
+                oldDocument.OperationalScheduleTimeSeries[i].TimeSeriesIdentification.V)) == null)
+            {
+                NewColumn(oldDocument.OperationalScheduleTimeSeries[i].TimeSeriesIdentification.V);
+            }
+            else
+            {
+                oldCount++;
+            }
+        }
+        LoadEarlierDateButtonClicked = false;
+        GenerateGrid(operationalScheduleDocument);
+        StateHasChanged();
+
+    }
+
+    private async void NewColumn(string id)
+    {
+        if (id == null)
+        {
+            NewColumnButtonClicked = false;
+        }
+        XmlTemplate xmlTemplate = await XmlTemplateApi.GetProductionPlanTempByCompany(CompanySelected.PublicIdentifier);
+        OperationalScheduleDocument document = null;
+        XmlSerializer serializer = new XmlSerializer(typeof(OperationalScheduleDocument));
+        using (TextReader reader = new StringReader(xmlTemplate.XMLTemplate))
+        {
+            document = (OperationalScheduleDocument)serializer.Deserialize(reader);
+        }
+        foreach (var documentOperationalScheduleTime in document.OperationalScheduleTimeSeries)
+        {
+            if (id.Length > 3)
+            {
+                documentOperationalScheduleTime.UnitIdentification = new UnitIdentification { V = id };
+                documentOperationalScheduleTime.TimeSeriesIdentification.V = id + "_" + documentOperationalScheduleTime.MeasurementUnit.V;
+            }
+            else
+            {
+                documentOperationalScheduleTime.UnitTypeIdentification = new UnitTypeIdentification { V = id };
+                documentOperationalScheduleTime.UnitIdentification = null;
+
+                documentOperationalScheduleTime.TimeSeriesIdentification.V = id + "_" + AreaSelected.Type + "_" + documentOperationalScheduleTime.MeasurementUnit.V;
+
+            }
+        }
+        operationalScheduleDocument.OperationalScheduleTimeSeries.AddRange(document.OperationalScheduleTimeSeries);
+        GenerateGrid(operationalScheduleDocument);
+        NewColumnButtonClicked = false;
+        StateHasChanged();
+    }
+
+
+}

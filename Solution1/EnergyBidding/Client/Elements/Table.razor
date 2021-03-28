@@ -1,0 +1,27 @@
+﻿
+<table class="@TableClass">
+    <thead>
+        <tr>
+            @foreach (string colloum in ColumnsName)
+            {
+                <th>@colloum</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @ChildContent
+    </tbody>
+</table>
+
+@code {
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public List<string> ColumnsName { get; set; }
+
+    [Parameter]
+    public string TableClass { get; set; } = "table";
+
+}

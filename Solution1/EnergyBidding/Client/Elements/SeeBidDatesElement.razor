@@ -1,0 +1,53 @@
+﻿@using BlazorBusinessLogic.Models.General
+@using System.Collections.ObjectModel
+@using System.Xml
+@using BlazorBusinessLogic
+@using BlazorBusinessLogic.ApiConnections
+@using C1.Blazor.Grid
+@using EnergyBidding.Client.Shared
+@inject BlazorBusinessLogic.ApiConnections.RawBidApiConnection RawBidConnection
+@inject CompanyApiConnection CompanyConnection
+@inject StateHolder State;
+<h3>SeeBidDates</h3>
+<Loading DataIsNotAvaiable="rawBidDates==null">
+    <Body>
+    <FlexGrid ItemsSource="rawBidDates" AutoGenerateColumns="false" IsReadOnly="true" SelectionChanged="OnSelectedChange" SelectionMode="GridSelectionMode.Row">
+        <FlexGridColumns>
+            <GridColumn Binding="Date" Format="MM/dd/yyyy" />
+            <GridColumn Binding="Area.Type" Header="Area"/>
+            <GridColumn Binding="Version"/>
+        </FlexGridColumns>
+    </FlexGrid>
+
+    </Body>
+</Loading>
+<button class="btn btn-primary @(rawBid == null && Select==null?"disabled":"")" @onclick="()=>Select(rawBid)">
+    Select
+</button>
+
+    
+
+
+@code {
+    [Parameter]
+    public BlazorBusinessLogic.Models.General.Company Company { get; set; }
+
+    [Parameter]
+    public Action<RawBidDateAndVersion> Select { get; set; } = null;
+    private RawBidDateAndVersion rawBid { get; set; }
+    ObservableCollection<RawBidDateAndVersion> rawBidDates { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        rawBidDates = new ObservableCollection<RawBidDateAndVersion>(await RawBidConnection.GetRawBidDatesByTheCompany(Company.PublicIdentifier));
+        StateHasChanged();
+
+    }
+
+    private void OnSelectedChange(object sender, GridCellRangeEventArgs e)
+    {
+        if (e.CellRange != null && e.CellRange.Row != -1)
+        {
+            rawBid = rawBidDates[e.CellRange.Row];
+        }
+    }
+}

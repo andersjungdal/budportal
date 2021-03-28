@@ -1,0 +1,16 @@
+﻿@page "/Company"
+@using BlazorBuisnessLogic.Net5
+@inject StateHolder State
+@* TODO:Place to holde Energinets public Id *@
+
+@if(State.User.Company?.PublicIdentifier == Guid.Parse("b88c198f-432a-4b0c-a5a9-f3e903692a5c")){
+    <EnergiNet></EnergiNet>
+}
+else
+{
+    <NormalCompany></NormalCompany>
+}
+
+@code {
+
+}

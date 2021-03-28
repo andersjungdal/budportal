@@ -1,0 +1,40 @@
+﻿@using BlazorBusinessLogic.Models.General
+@using System.Collections.ObjectModel
+@using BlazorBusinessLogic.ApiConnections
+@using ModelsInterfaces
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Popups
+@inject UserApiConnection UserApiConnection
+
+<SfGrid DataSource="users" Toolbar="@(new List<string>{"Add","Edit"})" AllowPaging="true">
+    <GridEditSettings AllowAdding="true" AllowEditing="true" Mode="EditMode.Dialog" Dialog="new DialogSettings()">
+        <Template>
+            <UserModel Company="Company" UserSubmit="new UserSubmit<Company, XmlTemplate>(context as User)" OnSubmit="CreateUser"></UserModel>
+        </Template>
+    </GridEditSettings>
+    <GridColumns>
+        <GridColumn Field=@nameof(User.UserName) HeaderText="User Name" TextAlign="TextAlign.Right"></GridColumn>
+        <GridColumn Field=@nameof(User.Role) HeaderText="Role" TextAlign="TextAlign.Right" ></GridColumn>
+    </GridColumns>
+</SfGrid>
+
+@code {
+    [Parameter]
+    public Company Company { get; set; }
+    List<User> users { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserApiConnection.GetByCompany(Company.PublicIdentifier);
+        StateHasChanged();
+    }
+
+    public async void CreateUser(IUserSubmit<Company, XmlTemplate> u)
+    {
+        User user = await UserApiConnection.Create(u);
+        if (user != null)
+        {
+            users.Add(user);
+        }
+    }
+}

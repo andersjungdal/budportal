@@ -1,0 +1,67 @@
+﻿@using EnergyBidding.Client.Elements;
+@using ModelsInterfaces
+@using ModelsInterfaces.Enums
+@using System.Text.Json
+@using BlazorBusinessLogic
+@using BlazorBusinessLogic.ApiConnections
+@using BlazorBusinessLogic.Models.General
+@using System.Collections.ObjectModel
+@using C1.Blazor.Core
+@using C1.Blazor.Grid
+@inject StateHolder state;
+@inject CompanyApiConnection CompanyApi
+
+
+<h3>EnergiNet</h3>
+<FlexGrid IsReadOnly="true" AutoGenerateColumns="false" HeadersVisibility="GridHeadersVisibility.All" ItemsSource="ObservableCompanies" VerticalScrollBarVisibility="ScrollBarVisibility.Visible" Style="@("max-height:50vh")">
+    <FlexGridColumns>
+        <GridColumn Binding="Name" Width="GridLength.Star" />
+        <GridColumn Binding="City" Width="GridLength.Star" />
+        <GridColumn Binding="ZipCode" Width="GridLength.Star" />
+        <GridColumn Binding="Road" Width="GridLength.Star" />
+    </FlexGridColumns>
+    <FlexGridBehaviors>
+        <FlexGridDetailProvider TItem="Company" Height="130" DetailVisibilityMode="detailVisibilityMode">
+            <UserTable Company="context"></UserTable>
+        </FlexGridDetailProvider>
+    </FlexGridBehaviors>
+</FlexGrid>
+@code {
+
+    public List<Company> Companies { get; set; }
+    private List<string> columns = new List<string>() { "Company", "Address" };
+    public bool Company { get; set; } = false;
+    ObservableCollection<Company> ObservableCompanies { get; set; }
+    GridDetailVisibilityMode detailVisibilityMode = GridDetailVisibilityMode.ExpandMultiple;
+    //GridDetailVisibilityMode[] detailVisibilityModes = new GridDetailVisibilityMode[] { GridDetailVisibilityMode.ExpandMultiple, GridDetailVisibilityMode.ExpandSingle, GridDetailVisibilityMode.Selection };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (state.User.Role <= Role.Admin)
+        {
+            columns.Add("");
+        }
+        Companies = await CompanyApi.Get();
+        ObservableCompanies = new ObservableCollection<Company>(await CompanyApi.Get());
+    }
+
+    public async void NewCompany(ICompany com)
+    {
+
+        Company response = await CompanyApi.Create(com);
+        if (response !=null)
+        {
+            Companies.Add(response);
+            StateHasChanged();
+        }
+    }
+
+    public async void Delete(Company company)
+    {
+        if (await CompanyApi.Delete(company.PublicIdentifier))
+        {
+            Companies.Remove(company);
+            StateHasChanged();
+        }
+    }
+}

@@ -1,0 +1,8 @@
+﻿/*
+    This file is to show how CSS and other static resources (such as images) can be
+    used from a library project/package.
+*/
+
+.hover-shadow:hover {
+    box-shadow: 0 0 11px rgba(33,33,33,.2);
+}

@@ -1,0 +1,124 @@
+﻿@using C1.Blazor.Grid
+@using System.Collections.ObjectModel;
+@using C1.Blazor.Core
+@using C1.Blazor.Input
+@using EnergyBidding.Shared.XmlDocument
+
+<FlexGrid @ref="grid"
+          AllowMerging="GridAllowMerging.AllHeaders"
+          HeadersVisibility="GridHeadersVisibility.All"
+          SelectionMode="GridSelectionMode.CellRange"
+          ColumnHeaderGridLinesVisibility="GridLinesVisibility.All"
+          GridLinesVisibility="GridLinesVisibility.All"
+          RowHeaderGridLinesVisibility="GridLinesVisibility.All"
+          CellEditEnded="OnCellEditEnd"
+          ColumnHeaderSelectedStyle="@("background-color:#F8F8F8")"
+          RowHeaderSelectedStyle="@("background-color:#F8F8F8")"
+          AllowSorting="false"
+          Style="@("max-height:80vh")">
+    <FlexGridColumns>
+        @for (int i = 0; i < Document.BidMessage.Length; i++)
+        {
+            <GridColumn HeaderHorizontalAlignment="C1HorizontalAlignment.Center" InputType="TextBoxType.Number" />
+            <GridColumn HeaderHorizontalAlignment="C1HorizontalAlignment.Center" InputType="TextBoxType.Number" />
+        }
+    </FlexGridColumns>
+    <FlexGridRows>
+        @{
+            DateTime day = new DateTime(Day.Year, Day.Month, Day.Day - 1, 23, 0, 0, DateTimeKind.Utc);
+        }
+        @for (int i = 0; i < Document.BidMessage[0].Period.Interval.Length; i++, day = day.AddMinutes(60))
+        {
+            <GridRow IsReadOnly="day < DateTime.UtcNow">
+
+            </GridRow>
+        }
+    </FlexGridRows>
+    <FlexGridColumnHeaderRows>
+        <GridRow AllowMerging="true"/>
+        <GridRow />
+    </FlexGridColumnHeaderRows>
+    <FlexGridRowHeaderColumns>
+        <GridColumn Width="160" />
+    </FlexGridRowHeaderColumns>
+</FlexGrid>
+
+@code {
+    [Parameter]
+    public BidDocument Document { get; set; }
+    [Parameter]
+    public DateTime Day { get; set; }
+    public int Interval = 60;
+    private FlexGrid grid;
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            GenerateGrid();
+        }
+    }
+    private void GenerateGrid()
+    {
+        if (grid == null)
+        {
+            return;
+        }
+        for (int r = 0; r < grid.Rows.Count; r++)
+        {
+            for (int c = 0; c < grid.Columns.Count; c+=2)
+            {
+                grid[r, c] = Document.BidMessage[c/2].Period.Interval[r].Quantity.v;
+                grid[r, c+1] = Document.BidMessage[c / 2].Period.Interval[r].Price.v;
+            }
+        }
+        GridPanel ch = grid.ColumnHeaders;
+        Console.WriteLine(ch.Columns.Count);
+        for (int c = 0; c < ch.Columns.Count; c += 2)
+        {
+            Console.WriteLine(c / 2);
+            ch[0, c] = ch[0, c + 1] = Document.BidMessage[c / 2].BidIdentification.v;
+            ch[1, c] = "Quantity";
+            ch[1, c + 1] = "Price";
+        }
+        GridPanel rh = grid.RowHeaders;
+        TimeSpan time = new TimeSpan(0, 0, 0);
+
+        for (int r = 0; r < rh.Rows.Count; r++)
+        {
+            rh[r, 0] = (new TimeSpan(0, r * Interval, 0).ToString(@"hh\:mm") +
+                        " - " + new TimeSpan(0, (r + 1) * Interval, 0).ToString(@"hh\:mm").Replace("00:00", "24:00"));
+        }
+    }
+    private void OnCellEditEnd(object sender, GridCellEditEventArgs e)
+    {
+        double BidMessageIndex = e.CellRange.Column / 2.0;
+        if (double.TryParse(grid[e.CellRange.Row, e.CellRange.Column] as string, out double currentValue))
+        {
+            if (BidMessageIndex % 1 == 0.0)
+            {
+                double OldValue = Document.BidMessage[(int)BidMessageIndex].Period.Interval[e.CellRange.Row].Quantity.v;
+                if (currentValue != OldValue)
+                {
+                    Document.BidMessage[(int)BidMessageIndex].Period.Interval[e.CellRange.Row].Quantity.v = currentValue;
+                }
+                else
+                {
+                    grid[e.CellRange.Row, e.CellRange.Column] = OldValue;
+                }
+            }
+            else
+            {
+                double OldValue = Document.BidMessage[(int)BidMessageIndex].Period.Interval[e.CellRange.Row].Price.v;
+                if (currentValue != OldValue)
+                {
+                    Document.BidMessage[(int)BidMessageIndex].Period.Interval[e.CellRange.Row].Price.v = currentValue;
+                }
+                else
+                {
+                    grid[e.CellRange.Row, e.CellRange.Column] = OldValue;
+                }
+
+            }
+        }
+    }
+}

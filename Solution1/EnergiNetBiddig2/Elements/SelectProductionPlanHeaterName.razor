@@ -1,0 +1,50 @@
+﻿@using BlazorBusinessLogic.Models.General
+@using BlazorBusinessLogic.ApiConnections
+@using BlazorBusinessLogic.ApiConnections.ExternApi
+@using EnergyBidding.Shared.Documents.ProductionPlanXml
+@using EnergiNetBiddig2.Elements
+@inject ProductionPlanColumnId ProductionPlanColumnIdApi
+<h3>Select column header</h3>
+<div>
+    @if (Elements!=null)
+    {
+        <SelectElement T="@string" Collection="Elements" @bind-Value="@Id"></SelectElement>
+
+    }
+    <button @onclick="@(() => NewColumn(Id))">Finish</button>
+</div>
+@code {
+    [Parameter]
+    public Action<string> NewColumn { get; set; }
+    [Parameter]
+    public Company Company { get; set; }
+    [Parameter]
+    public OperationalScheduleDocument OperationalScheduleDocument { get; set; }
+    [Parameter]
+    public Area Area { get; set; }
+    private List<string> Elements { get; set; }
+    public string Id { get; set; }
+    protected async override void OnInitialized()
+    {
+        Elements = new List<string>{"PW","PQ"};
+        Elements.AddRange(await ProductionPlanColumnIdApi.GetByCompanyPublicIdentifier(Company.PublicIdentifier, Area.PublicIdentifier));
+        foreach (var operationalScheduleTimeSeries in OperationalScheduleDocument.OperationalScheduleTimeSeries)
+        {
+            if (operationalScheduleTimeSeries.UnitIdentification == null)
+            {
+                Elements.Remove(operationalScheduleTimeSeries.UnitTypeIdentification.V);
+            }
+            else
+            {
+                Elements.Remove(operationalScheduleTimeSeries.UnitIdentification.V);
+            }
+        }
+        if (Elements.Count <= 0)
+        {
+            NewColumn(null);
+        }
+        Id = Elements[0];
+        StateHasChanged();
+    }
+
+}

@@ -1,0 +1,49 @@
+﻿@using ModelsInterfaces
+@using BlazorBusinessLogic.Models.General
+<h3>CompanyModel</h3>
+
+<EditForm Model="@NewCompany" OnValidSubmit="@(()=>OnSubmit(NewCompany))">
+    <p>
+        <label>
+            Name<br />
+            <InputText @bind-Value="@NewCompany.Name" />
+        </label>
+    </p>
+    <div>
+        <label>Address</label>
+        <p>
+            <label>
+                City <br />
+                <InputText @bind-Value="@NewCompany.City" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Zip code<br />
+                <InputNumber @bind-Value="@NewCompany.ZipCode"/>
+            </label>
+        </p>
+        <p>
+            <label>
+                Road<br />
+                <InputText @bind-Value="@NewCompany.Road" />
+            </label>
+        </p>
+        <p>
+            <label>
+                Street Number<br />
+                <InputText @bind-Value="@NewCompany.StreetNumber" />
+            </label>
+        </p>
+    </div>
+    <button type="submit">Create new Company</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public ICompany<XmlTemplate> NewCompany { get; set; } = new Company();
+    [Parameter]
+    public Action<ICompany<XmlTemplate>> OnSubmit { get; set; }
+
+}

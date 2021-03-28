@@ -1,0 +1,83 @@
+﻿@using ModelsInterfaces.Enums
+@using BlazorBusinessLogic
+
+@inject StateHolder State
+@inject NavigationManager nav;
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href=""><img src="https://energinet.dk/-/media/81EFCC09E60F465F89231CC3C2636A2D.png?h=20&la=da&w=161&hash=CF08F81E73A4A764AE808DCBA574587EAC32904B" /></a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+
+        <li class="nav-item px-3">
+            <NavLink class="nav-link text-white">
+                <span class="oi oi-person" aria-hidden="true"></span> <label>@(State.User?.UserName) </label>
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" @onclick="ToggleLogin">
+                @(State.User == null ? "Login" : "Logud")
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+
+        @if(State.User != null)
+        {
+            @if (State.User.Role <= Role.Bid)
+            {
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="Company">
+                        <span class="oi oi-briefcase" aria-hidden="true"></span> Company Page
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="Bid">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Bid
+                    </NavLink>
+                </li>
+            }
+        }
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="/swagger/index.html" target="_blank">
+                    <span class="oi oi-code" aria-hidden="true"></span>Swagger
+                </NavLink>
+            </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    protected override void OnInitialized()
+    {
+        State.NaveChange = StateHasChanged;
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void ToggleLogin()
+    {
+        if (State.User == null)
+        {
+            State.LogInState = !State.LogInState;
+        }
+        else
+        {
+            State.User = null;
+            nav.NavigateTo("/");
+        }
+    }
+}

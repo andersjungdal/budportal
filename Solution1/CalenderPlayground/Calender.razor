@@ -1,0 +1,93 @@
+﻿@using CalenderPlayground.Elements
+@using System.Globalization
+@using System.Security.Cryptography.X509Certificates
+
+<div class="border border-dark">
+    <div class="d-flex">
+        <label class="mr-auto p-2" style="font-size: 32px;">@SelectedDate.ToString("y")</label>
+        <button class="p-2 btn btn-outline-dark" style="margin:10px;" @onclick="()=>AddMonth(1)"><span class="oi oi-chevron-top" style="font-size: 32px;"></span></button>
+        <button class="p-2 btn btn-outline-dark"style="margin:10px;" @onclick="()=>AddMonth(-1)"><span class="oi oi-chevron-bottom"style="font-size: 32px;"></span></button>
+    </div>
+    <table class="table table-borderless">
+        <tr>
+            <th class="text-center">Mon</th>
+            <th class="text-center">Tue</th>
+            <th class="text-center">Wed</th>
+            <th class="text-center">Thu</th>
+            <th class="text-center">Fri</th>
+            <th class="text-center">Sat</th>
+            <th class="text-center">Sun</th>
+        </tr>
+        @{
+            DateTime finder = new DateTime(SelectedDate.Year, SelectedDate.Month, 1);
+            finder = finder.AddDays(7 - (finder.DayOfWeek == DayOfWeek.Sunday ? 7 :(int)finder.DayOfWeek));
+            finder = finder.AddDays(-7).AddDays((int) WeekStarts);
+            Console.WriteLine($"Year tjek: {finder.Year <= SelectedDate.Year} : Month Chek: {finder.Month <= SelectedDate.Month}");
+        }
+        @** The number siks com form thsi formel 7-DayYouWahtToStarOn
+        Remember if you wnat to change the starDate you have to change the DayOfWeek donw in the while loop*@
+        @for ( DateTime date = finder  ; (date.Year <= SelectedDate.Year && date.Month <= SelectedDate.Month) != (date.Month > SelectedDate.Month&& date.Year < SelectedDate.Year);)
+        {
+            <tr>
+                @do
+                {
+                    <td style="width: 150px;">
+                        <DayOfMonthElement Date="date" SelectedDate="SelectedDate" Onclick="SelectElement">
+                            <Template>
+                                @DayTemplate(context)
+                            </Template>
+                        </DayOfMonthElement>
+                    </td>
+                    {
+                        date = date.AddDays(1);
+                    }
+                } while (date.Date.DayOfWeek != WeekStarts);
+            </tr>
+        }
+    </table>
+</div>
+@code
+{
+
+    [Parameter]
+    public RenderFragment<DateTime> DayTemplate { get; set; }
+
+    private DateTime selectedDate;
+    [Parameter]
+    public DateTime SelectedDate
+    {
+        get { return selectedDate; }
+        set
+        {
+            selectedDate = value;
+            SelectedDayChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter]
+    public EventCallback<DateTime> SelectedDayChanged { get; set; }
+
+    public DayOfWeek WeekStarts { get; set; } = DayOfWeek.Monday;
+
+    [Parameter]
+    public Action<DateTime> MontChanged { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        SelectElement(DateTime.Today);
+    }
+
+    public void SelectElement(DateTime date)
+    {
+        if ((SelectedDate == null ||date.Month != SelectedDate.Month || date.Year != SelectedDate.Year)&&MontChanged != null)
+        {
+            MontChanged(date);
+        }
+        SelectedDate = date;
+        StateHasChanged();
+    }
+
+    public void AddMonth(int Amount)
+    {
+        SelectElement(SelectedDate.AddMonths(Amount));
+    }
+}

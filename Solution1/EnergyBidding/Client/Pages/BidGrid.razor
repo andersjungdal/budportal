@@ -1,0 +1,280 @@
+﻿@page "/Bid/{RawBidPublicIdentifire:guid}"
+@page "/NewBid/{AreaIdentifier:guid}/{DayInput:datetime}"
+@using BlazorBusinessLogic.Models.General
+@using BlazorBusinessLogic
+@using BlazorBusinessLogic.ApiConnections
+@using EnergyBidding.Shared.XmlDocument
+@using System.Dynamic
+@using System.Globalization
+@using System.IO
+@using System.Net
+@using System.Xml
+@using System.Xml.Serialization
+@using BlazorBusinessLogic.Models.XL
+@using ModelsInterfaces
+@using ModelsInterfaces.Enums
+@using Syncfusion.XlsIO.Parser.Biff_Records.MsoDrawing
+@using EnergyBidding.Client.Elements
+@using EnergyBidding.Client.Elements.BidVisulaizer
+@using Syncfusion.XlsIO
+@inject AreasApiConnections AreaApi;
+@inject CompanyApiConnection CompanyApi;
+@inject RawBidApiConnection RawBidApi;
+@inject StateHolder State;
+@inject IJSRuntime JS;
+
+<h3>BidGrid</h3>
+@if (Areas != null)
+{
+    <SelectElement T="Area" Collection="Areas.Value" @bind-Value="AreaSelected" GetValue="(x=> x.Type)"></SelectElement>
+}
+<input class="text-primary" type="date" @bind="Day" />
+@* TODO: Get the energinet name for a dynamisk source *@
+@if (Companys != null && Companys.Count > 1)
+{
+    <SelectElement T="BlazorBusinessLogic.Models.General.Company" Collection="Companys" @bind-Value="Company" GetValue="(x=> x.Name)"></SelectElement>
+}
+<button class="btn btn-primary" @onclick="Refresh">
+    <span class="oi oi-loop-circular"></span>
+</button>
+<button class="btn btn-primary @(XmlDocument == null?"disabled":"")" @onclick="DownloadExcel">
+    <span class="oi oi-cloud-download"></span>
+</button>
+<button class="btn btn-primary @(Day.Year < DateTime.UtcNow.Year || (Day.Year == DateTime.UtcNow.Year && Day.DayOfYear < DateTime.UtcNow.DayOfYear)?"disabled":"")" @onclick="()=>loadEarlierDate=true">
+    Load earlier bids
+</button>
+<button class="btn btn-primary @(XmlDocument == null?"disabled":"")" @onclick="Save">
+    Save
+</button>
+<Loading DataIsNotAvaiable="XmlDocument == null && tablefix">
+    <Body>
+        @if (Day.Year > DateTime.UtcNow.Year || (Day.Year == DateTime.UtcNow.Year && Day.DayOfYear >= DateTime.UtcNow.DayOfYear))
+        {
+            <UploadFile Document="XmlDocument" DocumentChanged="biddocumentUploadet">
+            </UploadFile>
+        }
+        <BidTable Document="XmlDocument" Day="Day"></BidTable>
+    </Body>
+</Loading>
+@if (loadEarlierDate)
+{
+    <div class="rounded position-absolute border border-primary" style="padding: 20px; top: 50%; left: 50%; width: 500px; height: 500px; background: white; transform: translate(-50%, -50%);">
+        <button class="btn btn-outline-danger border-0 float-right" @onclick="()=>loadEarlierDate=false"><span class="oi oi-x"></span></button>
+        <SeeBidDatesElement Company="Company" Select="SelectOldElement"></SeeBidDatesElement>
+    </div>
+}
+
+@code {
+
+    #region parmeters
+    [Parameter]
+    public Guid RawBidPublicIdentifire { get; set; } = Guid.Empty;
+    [Parameter]
+    public Guid AreaIdentifier { get; set; }
+    [Parameter]
+    public DateTime DayInput { get; set; }
+
+    private bool loadEarlierDate { get; set; } = false;
+    public bool tablefix { get; set; } = true;
+    public ICaching<List<Area>> Areas { get; set; }
+    public Area areaSelected;
+    public Area AreaSelected
+    {
+        get { return areaSelected; }
+        set
+        {
+            areaSelected = value;
+            Refresh();
+        }
+    }
+    public DateTime day { get; set; }
+    public DateTime Day
+    {
+        get { return day; }
+        set
+        {
+            day = value;
+            Refresh();
+        }
+    }
+    public List<BlazorBusinessLogic.Models.General.Company> Companys { get; set; }
+    public BlazorBusinessLogic.Models.General.Company company;
+    public BlazorBusinessLogic.Models.General.Company Company
+    {
+        get { return company; }
+        set
+        {
+            company = value;
+            Refresh();
+        }
+    }
+
+    public BidDocument XmlDocument { get; set; }
+
+    public int Version { get; set; } = 0;
+    #endregion
+
+    #region Mathods
+    protected override async Task OnInitializedAsync()
+    {
+        Task[] tasks = new Task[] { getCompanys(), getAreas() };
+
+        day = new DateTime(DayInput.Year, DayInput.Month, DayInput.Day, 0, 0, 0);
+        Task.WaitAll(tasks);
+
+        RawBid bid = null;
+        if (!RawBidPublicIdentifire.Equals(Guid.Empty))
+        {
+            bid = await getRawBid(RawBidPublicIdentifire);
+        }
+        if (RawBidPublicIdentifire.Equals(Guid.Empty))
+        {
+            bid = await getRawBid();
+        }
+        GennerateBid(bid);
+    }
+
+    private async Task getAreas()
+    {
+        Areas = await AreaApi.GetWithCache();
+        areaSelected = AreaIdentifier.Equals(Guid.Empty) ? Areas.Value[0] : Areas.Value.Find(x => x.PublicIdentifier.Equals(AreaIdentifier));
+    }
+
+    private async Task getCompanys()
+    {
+        BlazorBusinessLogic.Models.General.Company owner = await CompanyApi.GetOwner();
+        if (State.User.Company.PublicIdentifier == owner.PublicIdentifier)
+        {
+            List<BlazorBusinessLogic.Models.General.Company> comList = (await CompanyApi.GetCompanyWithCache()).Value;
+            Companys = new List<BlazorBusinessLogic.Models.General.Company>();
+            for (int i = 0; i < comList.Count; i++)
+            {
+                if (comList[i].PublicIdentifier != owner.PublicIdentifier)
+                {
+                    Companys.Add(comList[i]);
+                }
+            }
+        }
+        else
+        {
+            Companys = new List<BlazorBusinessLogic.Models.General.Company>() { State.User.Company };
+        }
+
+        company = Companys[0];
+    }
+
+    private async Task<RawBid> getRawBid(Guid rawBidPublicIdentifire)
+    {
+        RawBid bid = await RawBidApi.Get(RawBidPublicIdentifire);
+        day = new DateTime(bid.Date.Year, bid.Date.Month, bid.Date.Day, 0, 0, 0);
+        areaSelected = Areas.Value.Find(x => x.PublicIdentifier.Equals(bid.Area.PublicIdentifier));
+        company = Companys.First(x => x.PublicIdentifier.Equals(bid.Company.PublicIdentifier));
+        Version = bid.Version;
+        return bid;
+
+    }
+
+    private async Task<RawBid> getRawBid()
+    {
+        List<RawBid> bids = await RawBidApi.GetByAreaAndDate(AreaSelected.PublicIdentifier, Day, Company.PublicIdentifier, new HttpStatusCode[] { HttpStatusCode.BadRequest });
+        if (bids == null)
+        {
+            Version = 0;
+            RawBidPublicIdentifire = Guid.Empty;
+            return new RawBid() { XmlString = Company.XmlTemplate };
+        }
+
+        RawBidPublicIdentifire = bids[0].PublicIdentifier;
+        Version = bids[0].Version;
+        return bids[0];
+    }
+
+    private async void Refresh()
+    {
+        XmlDocument = null;
+        RawBid bid = await getRawBid();
+        GennerateBid(bid);
+        StateHasChanged();
+    }
+
+    private void GennerateBid(RawBid bid)
+    {
+        XmlSerializer serializer = new XmlSerializer(typeof(BidDocument));
+        using (TextReader reader = new StringReader(bid.XmlString))
+        {
+            XmlDocument = (BidDocument)serializer.Deserialize(reader);
+        }
+    }
+
+    public async Task DownloadExcel()
+    {
+        //TODO Find a fix for Hetters not rendering
+        BidDocument xmlDocument = XmlDocument;
+        XmlDocument = null;
+        using (ExcelEngine excelEngine = new ExcelEngine())
+        {
+            IApplication application = excelEngine.Excel;
+            application.DefaultVersion = ExcelVersion.Excel2016;
+            IWorkbook workbook = XLConverter.ConvertBidToExcel(xmlDocument, application);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                //Save the created Excel document to MemoryStream
+                workbook.SaveAs(stream);
+
+                //Download the excel file
+                await JS.InvokeAsync<object>(
+                "FileIO.SaveXL",
+                "Sample.xlsx",
+                Convert.ToBase64String(stream.ToArray()));
+            }
+        }
+        XmlDocument = xmlDocument;
+    }
+
+    public async void Save()
+    {
+        BidDocument xmlDocument = XmlDocument;
+        XmlDocument = null;
+
+        char[] DomainV = Enumerable.Repeat('-', 16).ToArray();
+        char[] input = $"10Y{AreaSelected.Type}".ToCharArray();
+        for (int i = 0; i < input.Length && i < DomainV.Length; i++)
+        {
+            DomainV[i] = input[i];
+        }
+        xmlDocument.MessageHeader.SenderIdentification.v = (ulong)Company.XmlIdentifier;
+        xmlDocument.MessageHeader.DocumentDateTime.v = new DateTime(Day.Year, Day.Month, Day.Day, 12, 0, 0);
+        xmlDocument.MessageHeader.ScheduleTimeInterval.v = $"{Day.AddDays(-1).ToString("yyyy-MM-dd")}T22:00Z/{Day.ToString("yyyy-MM-dd")}T22:00Z";
+        xmlDocument.MessageHeader.Domain.v = new string(DomainV);
+        XmlSerializer serializer = new XmlSerializer(typeof(BidDocument));
+        StringWriter stringWriter = new StringWriter();
+        serializer.Serialize(stringWriter, xmlDocument);
+        RawBid updateBid = new RawBid { PublicIdentifier = RawBidPublicIdentifire, Area = AreaSelected, Company = Company, Version = Version, Date = new DateTime(Day.Year, Day.Month, Day.Day), XmlString = stringWriter.ToString() };
+        if (Version == 0)
+        {
+            updateBid = await RawBidApi.Create(updateBid.XmlString);
+        }
+        else
+        {
+            updateBid = await RawBidApi.Update(updateBid);
+        }
+        Version = updateBid.Version;
+        GennerateBid(updateBid);
+        StateHasChanged();
+    }
+    public void biddocumentUploadet(BidDocument bidDocument)
+    {
+        XmlDocument = bidDocument;
+    }
+    private async void SelectOldElement(RawBidDateAndVersion rbdav)
+    {
+        XmlDocument = null;
+        StateHasChanged();
+        RawBid bid = (await RawBidApi.GetByAreaAndDate(rbdav.Area.PublicIdentifier, rbdav.Date, Company.PublicIdentifier))[0];
+        GennerateBid(bid);
+        loadEarlierDate = false;
+        StateHasChanged();
+    }
+    #endregion
+
+}

@@ -1,0 +1,19 @@
+﻿@typeparam T
+<tr @onclick="()=> RowClick(Object)" class="@Class" style="@Style">
+    @ChildContent
+</tr>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public T Object { get; set; }
+    [Parameter]
+    public Action<T> RowClick { get; set; }
+
+    [Parameter]
+    public string Class { get; set; } = "";
+
+    [Parameter]
+    public string Style { get; set; } = "";
+}

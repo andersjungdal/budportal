@@ -1,0 +1,45 @@
+﻿/*div.Grid {
+    overflow: auto;
+    width: 100%;
+    height: 200px;
+}
+
+div.Grid td,
+div.Grid th {
+    border: 1px solid #000;
+    width: 100px;
+}
+
+div.Grid th {
+    background-color: red;
+}
+
+div.Grid table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+    div.Grid td.GridHeader, div.Grid th.GridHeader {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background-color: grey;
+    }
+
+    div.Grid td.GridLeft, div.Grid th.GridLeft {
+        position: sticky;
+        right: 0;
+        z-index: 1;
+        background-color: blue;
+    }
+
+div.Grid thead tr th {
+    position: sticky;
+    top: 0;
+}
+
+    div.Grid th.GridHeader, div.Grid th:last-child {
+        z-index: 2;
+        background-color: red;
+    }
+*/

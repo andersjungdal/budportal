@@ -1,0 +1,536 @@
+﻿@page "/Bid/{RawBidPublicIdentifier:guid}"
+@page "/NewBid/{AreaIdentifier:guid}/{DayInput:datetime}"
+@using System.Dynamic
+@using System.Globalization
+@using System.IO
+@using System.Net
+@using System.Xml
+@using System.Xml.Serialization
+@using BlazorBuisnessLogic.Net5
+@using BlazorBuisnessLogic.Net5.ApiConnections
+@using BlazorBuisnessLogic.Net5.Models.General
+@using BlazorBuisnessLogic.Net5.Models.General.LockData
+@using BlazorBuisnessLogic.Net5.Models.XL
+@using ModelsInterfaces
+@using ModelsInterfaces.Enums
+@using Syncfusion.XlsIO.Parser.Biff_Records.MsoDrawing
+@using EnerinetServicePotal.Elements.BidVisulaizer
+@using EnerinetServicePotal.Elements
+@using EnergyBidding.Shared.Documents.XmlDocument
+@using Syncfusion.XlsIO
+@using Grid.Tables
+@using Grid.Tables.Cells
+@using Syncfusion.Blazor.LinearGauge
+@using ValueChangeEventArgs = Grid.Tables.ValueChangeEventArgs
+
+@inject AreasApiConnections AreaApi
+@inject CompanyApiConnection CompanyApi
+@inject RawBidApiConnection RawBidApi
+@inject XmlTemplateApiConnection XmlTemplateApi
+@inject StateHolder State
+@inject IJSRuntime JS
+
+<h3>BidGrid</h3>
+@if (Areas != null)
+{
+    <SelectElement T="Area" Collection="Areas" @bind-Value="AreaSelected" GetValue="@(x=>x.Type)"></SelectElement>
+}
+<input class="text-primary" type="date" @bind="Day" />
+@* TODO: Get the energinet name for a dynamisk source *@
+@if (Companies != null && Companies.Count > 1)
+{
+    <SelectElement T="BlazorBuisnessLogic.Net5.Models.General.Company" Collection="Companies" @bind-Value="Company" GetValue="(x=> x.Name)"></SelectElement>
+}
+<input type="checkbox" @bind="ShowLockValues"/>
+<button class="btn btn-primary" @onclick="Refresh">
+    <span class="oi oi-loop-circular"></span>
+</button>
+<button class="btn btn-primary" disabled="@(XmlDocument == null)" @onclick="DownloadExcel">
+    <span class="oi oi-cloud-download"></span>
+</button>
+<button class="btn btn-primary" disabled="@(Day.Year < DateTime.UtcNow.Year || (Day.Year == DateTime.UtcNow.Year && Day.DayOfYear < DateTime.UtcNow.DayOfYear))" 
+        @onclick="()=>loadEarlierDateButtonClicked=true">
+    Load earlier bids
+</button>
+<button class="btn btn-primary" disabled="@(XmlDocument == null||(Day.Year < DateTime.UtcNow.Year || (Day.Year == DateTime.UtcNow.Year && Day.DayOfYear < DateTime.UtcNow.DayOfYear)))" @onclick="Save">
+    Save
+</button>
+<button class="btn btn-primary" disabled="@(XmlDocument == null||(Day.Year < DateTime.UtcNow.Year || (Day.Year == DateTime.UtcNow.Year && Day.DayOfYear < DateTime.UtcNow.DayOfYear)))" @onclick="@(()=>newColumnButtonClicked=true)">
+    Add Row <span class="oi oi-plus"></span>
+</button>
+<Loading DataIsNotAvaiable="XmlDocument == null && TableFix">
+    <Body>
+    @if (Day.Year > DateTime.UtcNow.Year || (Day.Year == DateTime.UtcNow.Year && Day.DayOfYear >= DateTime.UtcNow.DayOfYear))
+    {
+        <UploadFile Document="XmlDocument" DocumentChanged="BidDocumentUploadet">
+        </UploadFile>
+    }
+    <div style="max-width: 80vw; height: 83vh">
+        <GridTabel
+            HorizontalHeader="HorizontalHeader"
+            VerticalHeader="VerticalHeader"
+            Body="Body"
+            OnValueChange="GridValueChanged">
+        </GridTabel>
+    </div>
+    </Body>
+</Loading>
+@if (loadEarlierDateButtonClicked)
+{
+    <div class="rounded position-absolute border border-primary" style="padding: 20px; top: 50%; left: 50%; width: 500px; height: 500px; background: white; z-index: 4;
+                                      transform: translate(-50%, -50%);">
+        <button class="btn btn-outline-danger border-0 float-right" @onclick="()=>loadEarlierDateButtonClicked=false"><span class="oi oi-x"></span></button>
+        <div class="overflow-auto h-100">
+            <SelectEaliereDocuments Company="Company" api="RawBidApi" Select="SelectOldElement"></SelectEaliereDocuments>
+        </div>
+    </div>
+}
+@if (newColumnButtonClicked)
+{
+    <div class="rounded position-absolute border border-primary" style="padding: 20px; top: 50%; left: 50%; width: 500px; height: 500px; background: white; z-index: 4;
+                                      transform: translate(-50%, -50%);">
+        <button class="btn btn-outline-danger border-0 float-right" @onclick="()=>newColumnButtonClicked=false"><span class="oi oi-x"></span></button>
+        <div class="overflow-auto h-100">
+            <SetRawBidIdWhenCreatingNewColumns generateNewColumns="NewColumn"></SetRawBidIdWhenCreatingNewColumns>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public Guid RawBidPublicIdentifier { get; set; } = Guid.Empty;
+    [Parameter]
+    public Guid AreaIdentifier { get; set; }
+    [Parameter]
+    public DateTime DayInput { get; set; }
+
+    List<RawBidColumn> LockRawBid { get; set; }
+
+    private bool loadEarlierDateButtonClicked { get; set; } = false;
+    public bool TableFix { get; set; } = true;
+    public List<Area> Areas { get; set; }
+    private bool newColumnButtonClicked { get; set; } = false;
+    private Area areaSelected;
+    public Area AreaSelected
+    {
+        get { return areaSelected; }
+        set
+        {
+            areaSelected = value;
+            Refresh();
+        }
+    }
+    private DateTime day { get; set; }
+    public DateTime Day
+    {
+        get { return day; }
+        set
+        {
+            day = value;
+            Refresh();
+        }
+    }
+    private bool showLockValues = true;
+    public bool ShowLockValues {
+        get { return showLockValues; }
+        set
+        {
+            showLockValues = value;
+            GenerateGrid(XmlDocument);
+        }
+    }
+    public List<BlazorBuisnessLogic.Net5.Models.General.Company> Companies { get; set; }
+    private BlazorBuisnessLogic.Net5.Models.General.Company company;
+    public BlazorBuisnessLogic.Net5.Models.General.Company Company
+    {
+        get { return company; }
+        set
+        {
+            company = value;
+            Refresh();
+        }
+    }
+
+    public BidDocument XmlDocument { get; set; }
+
+    public int Version { get; set; } = 0;
+
+    private int Interval = 60;
+
+    //Table Data
+    public List<List<HCell>> VerticalHeader { get; set; }
+    public List<List<HCell>> HorizontalHeader { get; set; }
+    public List<List<ICell>> Body { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Task[] tasks = new Task[] { GenerateCompanies(), GenerateAreas() };
+
+        day = new DateTime(DayInput.Year, DayInput.Month, DayInput.Day, 0, 0, 0);
+        foreach (var VARIABLE in tasks)
+        {
+            await VARIABLE;
+        }
+        Task<List<RawBidColumn>> LockLoading = null;
+        RawBid bid = null;
+        if (!RawBidPublicIdentifier.Equals(Guid.Empty))
+        {
+            bid = await GenerateRawBid(RawBidPublicIdentifier);
+        }
+        if (RawBidPublicIdentifier.Equals(Guid.Empty))
+        {
+            bid = await GenerateRawBid();
+        }
+        else
+        {
+            LockLoading = RawBidApi.GetRawBidLockCells(bid.PublicIdentifier);
+        }
+        GenerateBid(bid);
+        if (LockLoading != null)
+        {
+            LockRawBid= await LockLoading;
+        }
+        await GenerateGrid(XmlDocument);
+    }
+
+    public async void GridValueChanged(ValueChangeEventArgs value)
+    {
+        double oldValue = 0;
+        double XValue = value.X / 2.0;
+        if (XValue % 1 == 0)
+        {
+            oldValue = XmlDocument.BidMessage[value.X / 2].Period.Interval[value.Y-1].Quantity.v;
+            XmlDocument.BidMessage[value.X / 2].Period.Interval[value.Y-1].Quantity.v = string.IsNullOrEmpty(value.Value) ? 0.0 : double.Parse(value.Value);
+        }
+        else
+        {
+            oldValue = XmlDocument.BidMessage[value.X / 2].Period.Interval[value.Y-1].Price.v;
+            XmlDocument.BidMessage[value.X / 2].Period.Interval[value.Y-1].Price.v = string.IsNullOrEmpty(value.Value) ? 0.0 : double.Parse(value.Value);
+        }
+        await GenerateBody(XmlDocument);
+        StateHasChanged();
+    }
+    private async Task GenerateGrid(BidDocument Bid)
+    {
+        Task[] task = new Task[]
+        {
+            GenerateHorizontalHeader(Bid), GenerateVerticalHeader(), GenerateBody(Bid)
+        };
+        Task.WaitAll(task);
+    }
+    //TODO: DST
+
+    private async Task GenerateBody(BidDocument Bid)
+    {
+        Body = new List<List<ICell>>();
+        for (int x = 0; x < Bid.BidMessage.Count; x++)//Collumn
+        {
+            RawBidColumn column = null;
+            if (LockRawBid != null && showLockValues)
+            {
+                column = LockRawBid.FirstOrDefault(l => l.CollumName.Equals(Bid.BidMessage[x].BidIdentification.v));
+            }
+            for (int y = 0; y < Bid.BidMessage[x].Period.Interval.Length; y++)//Raw
+            {
+                if (Body.Count <= y)
+                {
+                    Body.Add(new List<ICell>());
+                }
+                if (column?.Rows.FirstOrDefault(c=>c.Index == y+1) != null)
+                {
+                    Body[y].Add(new Cell
+                    { Value = column.Rows[y].Quantity.ToString(), InputType = "number" });
+                    Console.WriteLine();
+                    Body[y].Add(
+                        new Cell { Value = column.Rows[y].Quantity.ToString(), InputType = "number" });
+                }
+                else
+                {
+                    Body[y].Add(new Cell
+                    { Value = Bid.BidMessage[x].Period.Interval[y].Quantity.v.ToString(), InputType = "number" });
+                    Body[y].Add(
+                        new Cell { Value = Bid.BidMessage[x].Period.Interval[y].Price.v.ToString(), InputType = "number" });
+
+                }
+                DateTime date = DateTime.UtcNow.AddHours(1).AddMinutes(5);
+                if (Day.DayOfYear == DateTime.UtcNow.DayOfYear && Day.Day == DateTime.UtcNow.Day && date.Hour * 60 + date.Minute > y * Interval)
+                {
+                    Body[y][x*2].Unchangeable = true;
+                    Body[y][x*2+1].Unchangeable = true;
+                }
+            }
+        }
+        GenerateGridSum(Bid);
+    }
+
+    private void GenerateGridSum(BidDocument Bid)
+    {
+        var e = new List<ICell>();
+        foreach (var bidMessage in Bid.BidMessage)
+        {
+            e.Add(new Cell
+            {
+                Value = bidMessage.Period.Interval.Sum(x => x.Quantity.v).ToString(),
+                Unchangeable = true
+            });
+            e.Add(new Cell
+            {
+                Value = bidMessage.Period.Interval.Sum(x => x.Price.v).ToString(),
+                Unchangeable = true
+            });
+        }
+
+        Body.Insert(0, e);
+        Body.Add(e);
+    }
+
+    private async Task GenerateVerticalHeader()
+    {
+        VerticalHeader = new List<List<HCell>>();
+        DateTime day = DateTime.Parse($"{Day.ToString("yyyy/MM/dd")} 00:00:00AM", new CultureInfo("da-DK"));
+        while (day.Day == Day.Day)
+        {
+            string value = day.ToString("HH:mm");
+            day = day.AddMinutes(Interval);
+            value += " - " + day.ToString("HH:mm").Replace("00:00", "24:00");
+            VerticalHeader.Add(new List<HCell> {new HCell {Value = value}});
+        }
+        VerticalHeader.Insert(0,new List<HCell> {new HCell {Value = "Sum"}});
+        VerticalHeader.Add(new List<HCell> {new HCell {Value = "Sum"}});
+
+    }
+
+    private async Task GenerateHorizontalHeader(BidDocument Bid)
+    {
+        HorizontalHeader = new List<List<HCell>>();
+        var row1 = new List<HCell>();
+        var row2 = new List<HCell>();
+        foreach (var TimeSerise in Bid.BidMessage)
+        {
+            row1.Add(new HCell {Columspan = 2, Value = TimeSerise.BidIdentification.v});
+            row2.Add(new HCell {Value = "Quantity"});
+            row2.Add(new HCell {Value = "Price"});
+        }
+
+        HorizontalHeader.Add(row1);
+        HorizontalHeader.Add(row2);
+    }
+
+    private async Task GenerateAreas()
+    {
+        Areas = await AreaApi.GetWithCache();
+        areaSelected = AreaIdentifier.Equals(Guid.Empty) ? Areas[0] : Areas.Find(x => x.PublicIdentifier.Equals(AreaIdentifier));
+    }
+
+    private async Task GenerateCompanies()
+    {
+        BlazorBuisnessLogic.Net5.Models.General.Company owner = await CompanyApi.GetOwner();
+        if (State.User.Company.PublicIdentifier == owner.PublicIdentifier)
+        {
+            List<BlazorBuisnessLogic.Net5.Models.General.Company> comList = (await CompanyApi.GetCompanyWithCache());
+            Companies = new List<BlazorBuisnessLogic.Net5.Models.General.Company>();
+            for (int i = 0; i < comList.Count; i++)
+            {
+                if (comList[i].PublicIdentifier != owner.PublicIdentifier)
+                {
+                    Companies.Add(comList[i]);
+                }
+            }
+        }
+        else
+        {
+            Companies = new List<BlazorBuisnessLogic.Net5.Models.General.Company>() { State.User.Company };
+        }
+
+        company = Companies[0];
+    }
+
+    private async Task<RawBid> GenerateRawBid(Guid rawBidPublicIdentifier)
+    {
+        RawBid bid = await RawBidApi.Get(rawBidPublicIdentifier);
+        day = new DateTime(bid.Date.Year, bid.Date.Month, bid.Date.Day, 0, 0, 0);
+        areaSelected = Areas.Find(x => x.PublicIdentifier.Equals(bid.Area.PublicIdentifier));
+        company = Companies.First(x => x.PublicIdentifier.Equals(bid.Company.PublicIdentifier));
+        Version = bid.Version;
+        return bid;
+
+    }
+
+    private async Task<RawBid> GenerateRawBid()
+    {
+        RawBid bids = await RawBidApi.GetByAreaAndDate(AreaSelected.PublicIdentifier, Day, Company.PublicIdentifier, new HttpStatusCode[] { HttpStatusCode.BadRequest });
+        if (bids == null)
+        {
+            Task<XmlTemplate> template = XmlTemplateApi.GetRawBidByCompany(Company.PublicIdentifier);
+            Version = 0;
+            RawBidPublicIdentifier = Guid.Empty;
+            return new RawBid() { XmlString = (await template).XMLTemplate};
+        }
+
+        RawBidPublicIdentifier = bids.PublicIdentifier;
+        Version = bids.Version;
+        return bids;
+    }
+
+    private async void Refresh()
+    {
+        RawBid bid = await GenerateRawBid();
+        Task<List<RawBidColumn>> loadRawBidCollums = null;
+        if (!bid.PublicIdentifier.Equals(Guid.Empty))
+        {
+            loadRawBidCollums = RawBidApi.GetRawBidLockCells(bid.PublicIdentifier);
+        }
+        GenerateBid(bid);
+        if (loadRawBidCollums != null)
+        {
+            LockRawBid = await loadRawBidCollums;
+        }
+        else
+        {
+            LockRawBid = null;
+        }
+        await GenerateGrid(XmlDocument);
+        StateHasChanged();
+    }
+
+    private void GenerateBid(RawBid bid)
+    {
+        XmlSerializer serializer = new XmlSerializer(typeof(BidDocument));
+        using (TextReader reader = new StringReader(bid.XmlString))
+        {
+            XmlDocument = (BidDocument)serializer.Deserialize(reader);
+        }
+    }
+
+    public async Task DownloadExcel()
+    {
+        //TODO Find a fix for Hetters not rendering
+        BidDocument xmlDocument = XmlDocument;
+        XmlDocument = null;
+        using (ExcelEngine excelEngine = new ExcelEngine())
+        {
+            IApplication application = excelEngine.Excel;
+            application.DefaultVersion = ExcelVersion.Excel2016;
+            IWorkbook workbook = XLConverter.ConvertBidToExcel(xmlDocument, application);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                //Save the created Excel document to MemoryStream
+                workbook.SaveAs(stream);
+
+                //Download the excel file
+                await JS.InvokeAsync<object>(
+                "FileIO.SaveXL",
+                "Sample.xlsx",
+                Convert.ToBase64String(stream.ToArray()));
+            }
+        }
+        XmlDocument = xmlDocument;
+    }
+
+    public async void Save()
+    {
+        BidDocument xmlDocument = XmlDocument;
+        XmlDocument = null;
+
+        PopulateDocumentHeader(xmlDocument);
+
+        RawBid updateBid = PopulateDocumentBody(xmlDocument);
+        Console.WriteLine(updateBid.XmlString);
+        if (Version == 0)
+        {
+            updateBid = await RawBidApi.Create(updateBid.XmlString);
+        }
+        else
+        {
+            updateBid = await RawBidApi.Update(updateBid);
+        }
+        if (updateBid == null)
+        {
+            XmlDocument = xmlDocument;
+            return;
+        }
+        Version = updateBid.Version;
+        GenerateBid(updateBid);
+        StateHasChanged();
+    }
+    private void PopulateDocumentHeader(BidDocument xmlDocument)
+    {
+        char[] DomainV = Enumerable.Repeat('-', 16).ToArray();
+        char[] input = $"10Y{AreaSelected.Type}".ToCharArray();
+        for (int i = 0; i < input.Length && i < DomainV.Length; i++)
+        {
+            DomainV[i] = input[i];
+        }
+
+        xmlDocument.MessageHeader.SenderIdentification.v = (ulong) Company.XmlIdentifier;
+        Console.WriteLine("RawBid sender : " + xmlDocument.MessageHeader.SenderIdentification.v);
+        xmlDocument.MessageHeader.DocumentDateTime.v = new DateTime(Day.Year, Day.Month, Day.Day, 12, 0, 0);
+        xmlDocument.MessageHeader.ScheduleTimeInterval.v =
+            $"{Day.AddDays(-1).ToString("yyyy-MM-dd")}T22:00Z/{Day.ToString("yyyy-MM-dd")}T22:00Z";
+        xmlDocument.MessageHeader.Domain.v = new string(DomainV);
+    }
+    private RawBid PopulateDocumentBody(BidDocument xmlDocument)
+    {
+        XmlSerializer serializer = new XmlSerializer(typeof(BidDocument));
+        StringWriter stringWriter = new StringWriter();
+        serializer.Serialize(stringWriter, xmlDocument);
+        RawBid updateBid = new RawBid
+        {
+            PublicIdentifier = RawBidPublicIdentifier, Area = AreaSelected, Company = Company, Version = Version,
+            Date = new DateTime(Day.Year, Day.Month, Day.Day), XmlString = stringWriter.ToString()
+        };
+        return updateBid;
+    }
+
+
+    public void BidDocumentUploadet(BidDocument bidDocument)
+    {
+        XmlDocument = bidDocument;
+    }
+    private async void SelectOldElement(BidDateAndVersion bidDateAndVersion)
+    {
+        RawBid bid = (await RawBidApi.GetByVersionAreaCompanyAndDate
+            (bidDateAndVersion.Area.PublicIdentifier, bidDateAndVersion.Date, Company.PublicIdentifier, bidDateAndVersion.Version));
+        BidDocument oldxml = XmlDocument;
+        GenerateBid(bid);
+        int oldCount = oldxml.BidMessage.Count - XmlDocument.BidMessage.Count;
+
+        for (int i = 0; i < oldCount; i++)
+        {
+            Console.WriteLine(oldxml.BidMessage[i].BidIdentification.v);
+            if (XmlDocument.BidMessage.FirstOrDefault(x => x.BidIdentification.v.Equals(oldxml.BidMessage[i].BidIdentification.v))==null)
+            {
+                NewColumn(oldxml.BidMessage[i].BidIdentification.v.Replace("ID",""));
+
+            }
+            else
+            {
+                oldCount++;
+            }
+
+        }
+        await GenerateGrid(XmlDocument);
+        loadEarlierDateButtonClicked = false;
+        StateHasChanged();
+    }
+
+    public async void NewColumn(string id)
+    {
+        XmlTemplate bid = await XmlTemplateApi.GetRawBidByCompany(Company.PublicIdentifier);
+        XmlSerializer serializer = new XmlSerializer(typeof(BidDocument));
+        BidDocument biddock;
+        using (TextReader reader = new StringReader(bid.XMLTemplate))
+        {
+            biddock = (BidDocument)serializer.Deserialize(reader);
+        }
+        if (biddock != null)
+        {
+            biddock.BidMessage[0].BidIdentification.v = "ID"+id;
+            XmlDocument.BidMessage.AddRange(biddock.BidMessage);
+            await GenerateGrid(XmlDocument);
+            newColumnButtonClicked = false;
+            StateHasChanged();
+        }
+    }
+}

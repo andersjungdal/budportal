@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FakeEnerginetAPI": {
+      "commandName": "Project",
+      "commandLineArgs": "host start --build --port 7072 --cors * --pause-on-error"
+    }
+  }
+}

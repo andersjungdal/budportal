@@ -1,0 +1,12 @@
+﻿@using System.Runtime.InteropServices.ComTypes
+<h3>New column Id</h3>
+<input @bind="Id"/>
+<button class="btn btn-primary" @onclick="(()=>generateNewColumns(Id))">
+    Finish
+</button>
+
+@code {
+    [Parameter]
+    public Action<string> generateNewColumns { get; set; }
+    public string Id { get; set; }
+}

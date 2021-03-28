@@ -1,0 +1,33 @@
+﻿@using Syncfusion.Blazor.Inputs
+@using System.IO
+@using System.Text
+@using BlazorBusinessLogic.Models.General
+@using BlazorBusinessLogic.Models.XL
+@using EnergyBidding.Shared.XmlDocument
+@using Syncfusion.Blazor.Inputs.Internal
+
+<SfUploader ID="UploadFiles" AutoUpload="false" Multiple=false AllowedExtensions=".xls, .xlsx">
+    <UploaderEvents ValueChange="OnChange"></UploaderEvents>
+</SfUploader>
+
+
+@code {
+
+    [Parameter]
+    public BidDocument Document { get; set; }
+
+    [Parameter]
+    public EventCallback<BidDocument> DocumentChanged { get; set; }
+
+    private async void OnChange(UploadChangeEventArgs args)
+    {
+        Console.WriteLine(args.Files.Count);
+        foreach (UploadFiles file in args.Files)
+        {
+            await DocumentChanged.InvokeAsync(null);
+            Document = XLConverter.ConvertExcelToBid(file.Stream, Document);
+            await DocumentChanged.InvokeAsync(Document);
+            file.Stream.Close();
+        }
+    }
+}

@@ -1,0 +1,34 @@
+﻿@using EnergiNetBiddig2.Elements
+@using BlazorBusinessLogic
+@inherits LayoutComponentBase
+@inject StateHolder State
+
+
+@if (State.PubUp != null)
+{
+    <div class="position-absolute w-100 h-100" style="background-color: rgba(100,100,100,0.6); z-index: 3" >
+        <ErrorPopUp></ErrorPopUp>
+    </div>
+    
+}
+<div class="sidebar @(State.PubUp != null ? "disabled":"")">
+    <NavMenu />
+</div>
+
+<div class="main @(State.PubUp != null ? "disabled":"")">
+    <div class="top-row px-4">
+        <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+    </div>
+    @if (State.LogInState)
+    {
+        <Login />
+    }
+    @Body
+</div>
+@code {
+
+    protected override void OnInitialized()
+    {
+        State.globalStateChange = StateHasChanged;
+    }
+}

@@ -1,0 +1,319 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msData="urn:schemas-microsoft-com:xml-msData">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:Element name="root" msData:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:Element name="metaData">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:Element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:Element>
+          <xsd:Element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:Element>
+          <xsd:Element name="Data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:Element name="value" type="xsd:string" minOccurs="0" msData:Ordinal="1" />
+                <xsd:Element name="comment" type="xsd:string" minOccurs="0" msData:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msData:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msData:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msData:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:Element>
+          <xsd:Element name="resHeader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:Element name="value" type="xsd:string" minOccurs="0" msData:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:Element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:Element>
+  </xsd:schema>
+  <resHeader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resHeader>
+  <resHeader name="version">
+    <value>2.0</value>
+  </resHeader>
+  <resHeader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resHeader>
+  <resHeader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resHeader>
+  <Data name="Aktion" xml:space="preserve">
+    <value>{
+    "PublicIdentifier": "80947815-0d74-4f5b-9128-859f591344e6",
+    "Description": "I test Dev",
+    "Type": "DK-1"
+ }</value>
+  </Data>
+  <Data name="Areas" xml:space="preserve">
+    <value>[
+  {
+    "PublicIdentifier": "80947815-0d74-4f5b-9128-859f591344e6",
+    "Description": "I test Dev",
+    "Type": "DK-1"
+  },
+  {
+    "PublicIdentifier": "aabfd65d-9a9a-43e6-9e69-c7ce09c86d16",
+    "Description": "I test Dev",
+    "Type": "DK-2"
+  }
+]</value>
+  </Data>
+  <Data name="Company" xml:space="preserve">
+    <value>{
+    "PublicIdentifier": "b88c198f-432a-4b0c-a5a9-f3e903692a5c",
+    "Name": "Energinet",
+    "City": "Fredericia",
+    "ZipCode": 7000,
+    "Road": "Tonne Kjærsvej",
+    "StreetNumber": "65",
+    "XmlIdentifier": 5790000432752
+  }</value>
+  </Data>
+  <Data name="Companies" xml:space="preserve">
+    <value>[
+  {
+    "PublicIdentifier": "b88c198f-432a-4b0c-a5a9-f3e903692a5c",
+    "Name": "Energinet",
+    "City": "Fredericia",
+    "ZipCode": 7000,
+    "Road": "Tonne Kjærsvej",
+    "StreetNumber": "65",
+    "XmlIdentifier": 5790000432752
+  },
+  {
+    "PublicIdentifier": "71708e60-c4dd-49f0-87f2-bd1b2ba5574b",
+    "Name": "Ørsted",
+    "City": "Skærbæk",
+    "ZipCode": 7000,
+    "Road": "Kraftværksvej",
+    "StreetNumber": "53",
+    "XmlIdentifier": 1
+  },
+  {
+    "PublicIdentifier": "470d1237-ff3f-4385-815b-057d3bed9825",
+    "Name": "Vestas",
+    "City": "Århus",
+    "ZipCode": 8200,
+    "Road": "Hedeager",
+    "StreetNumber": "42",
+    "XmlIdentifier": 2
+  },
+  {
+    "PublicIdentifier": "dc832da5-7459-43b5-b1af-47ec4f5e7924",
+    "Name": "Ewii",
+    "City": "Kolding",
+    "ZipCode": 6000,
+    "Road": "Kokbjerg",
+    "StreetNumber": "30",
+    "XmlIdentifier": 3
+  },
+  {
+    "PublicIdentifier": "9f85d6ac-9d6a-4f76-8fac-703612287736",
+    "Name": "Nature Energy",
+    "City": "Odense",
+    "ZipCode": 5220,
+    "Road": "Ørbækvej",
+    "StreetNumber": "260",
+    "XmlIdentifier": 0
+  }
+]</value>
+  </Data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <Data name="mFRR_regulerkraftbud" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\mFRR_regulerkraftbud.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </Data>
+  <Data name="RawBid" xml:space="preserve">
+    <value>{
+  "publicIdentifier": "f7d5fb21-e0b7-4d78-a77f-4bacec6d4549",
+  "company": {
+    "publicIdentifier": "b88c198f-432a-4b0c-a5a9-f3e903692a5c",
+    "name": "Energinet",
+    "city": "Fredericia",
+    "zipCode": 7000,
+    "road": "Tonne Kjærsvej",
+    "streetNumber": "65",
+    "xmlIdentifier": 5790000432752
+  },
+  "user": {
+    "id": "9c969fc9-149a-4de6-a055-deced6b52bd6",
+    "userName": "Test",
+    "company": {
+      "publicIdentifier": "71708e60-c4dd-49f0-87f2-bd1b2ba5574b",
+      "name": "Ørsted",
+      "city": "Skærbæk",
+      "zipCode": 7000,
+      "road": "Kraftværksvej",
+      "streetNumber": "53",
+      "xmlIdentifier": 1
+    },
+    "roles": 1
+  },
+  "area": {
+    "publicIdentifier": "80947815-0d74-4f5b-9128-859f591344e6",
+    "description": "I test Dev",
+    "type": "DK-1"
+  },
+  "Date": "0001-01-01T00:00:00"
+}</value>
+  </Data>
+  <Data name="RawBids" xml:space="preserve">
+    <value>[
+{
+  "publicIdentifier": "f7d5fb21-e0b7-4d78-a77f-4bacec6d4549",
+  "company": {
+    "publicIdentifier": "b88c198f-432a-4b0c-a5a9-f3e903692a5c",
+    "name": "Energinet",
+    "city": "Fredericia",
+    "zipCode": 7000,
+    "road": "Tonne Kjærsvej",
+    "streetNumber": "65",
+    "xmlIdentifier": 5790000432752
+  },
+  "user": {
+    "id": "9c969fc9-149a-4de6-a055-deced6b52bd6",
+    "userName": "Test",
+    "company": {
+      "publicIdentifier": "71708e60-c4dd-49f0-87f2-bd1b2ba5574b",
+      "name": "Ørsted",
+      "city": "Skærbæk",
+      "zipCode": 7000,
+      "road": "Kraftværksvej",
+      "streetNumber": "53",
+      "xmlIdentifier": 1
+    },
+    "roles": 1
+  },
+  "area": {
+    "publicIdentifier": "80947815-0d74-4f5b-9128-859f591344e6",
+    "description": "I test Dev",
+    "type": "DK-1"
+  },
+  "Date": "0001-01-01T00:00:00"
+}
+]</value>
+  </Data>
+  <Data name="User" xml:space="preserve">
+    <value>{
+  "id": "9c969fc9-149a-4de6-a055-deced6b52bd6",
+  "userName": "Test",
+  "company": {
+    "publicIdentifier": "71708e60-c4dd-49f0-87f2-bd1b2ba5574b",
+    "name": "Ørsted",
+    "city": "Skærbæk",
+    "zipCode": 7000,
+    "road": "Kraftværksvej",
+    "streetNumber": "53",
+    "xmlIdentifier": 1
+  },
+  "roles": 1
+}</value>
+  </Data>
+  <Data name="Users" xml:space="preserve">
+    <value>[
+  {
+    "id": "29e0e8e4-1634-4ab2-ac53-a3e269bec6f6",
+    "userName": "Test2",
+    "company": {
+      "publicIdentifier": "00000000-0000-0000-0000-000000000000"
+    },
+    "roles": 1
+  },
+  {
+    "id": "aadc1c0e-068c-47f8-a996-a56bf37e04eb",
+    "userName": "Ørsted",
+    "company": {
+      "publicIdentifier": "00000000-0000-0000-0000-000000000000"
+    },
+    "roles": 0
+  },
+  {
+    "id": "9c969fc9-149a-4de6-a055-deced6b52bd6",
+    "userName": "Test",
+    "company": {
+      "publicIdentifier": "00000000-0000-0000-0000-000000000000"
+    },
+    "roles": 1
+  }
+]</value>
+  </Data>
+</root>

@@ -1,0 +1,116 @@
+﻿@using ModelsInterfaces
+@using EnergiNetBiddig2.Elements
+@using ModelsInterfaces.Enums
+@using System.Reflection
+@using System.Security.Cryptography.X509Certificates
+@using BlazorBusinessLogic
+@using BlazorBusinessLogic.ApiConnections
+@using BlazorBusinessLogic.Models.General
+@using BlazorBusinessLogic.Models.UI
+@using CalenderPlayground
+@inject CompanyApiConnection CompanyApi
+@inject UserApiConnection UserApi
+@inject StateHolder State
+@inject RawBidApiConnection RawBidApi
+@inject NavigationManager nav
+<Loading DataIsNotAvaiable="users == null">
+    <Body>
+        <h3>@State.User.Company.Name</h3>
+        <Table ColumnsName="@(new List<string>() {"Username", "Role", ""})">
+
+            @foreach (User user in users)
+            {
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>@user.Role</td>
+                    <td>
+                        @if (State.User.Role <= Role.Admin)
+                        {
+                            <button class=" btn btn-outline-danger border-0" @onclick="() => StartDeletingUser(user)">
+                                <span class="oi oi-x"></span>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+            <tr>
+                @if (State.User.Role <= Role.Admin)
+                {
+                    <button class="btn btn-primary" @onclick="() => createNewUser = !createNewUser"><span class="oi oi-plus"></span></button>
+                }
+            </tr>
+        </Table>
+
+        @if (createNewUser)
+        {
+            <div>
+                <UserModel Company="company" OnSubmit="OnSubmit"></UserModel>
+            </div>
+        }
+    </Body>
+</Loading>
+
+@code {
+
+    Company company { get; set; }
+    List<User> users { get; set; }
+    bool createNewUser { get; set; } = false;
+    protected override async Task OnInitializedAsync()
+    {
+        company = await CompanyApi.Get(State.User.Company.PublicIdentifier);
+        users = await UserApi.GetByCompany(company.PublicIdentifier);
+
+
+    }
+    public async void OnSubmit(IUserSubmit<Company, XmlTemplate> user)
+    {
+        User result = await UserApi.Create(user);
+        if (result != null)
+        {
+            users.Add(result);
+            createNewUser = false;
+            StateHasChanged();
+        }
+    }
+    public void StartDeletingUser(User user)
+    {
+        State.PubUp = new PopUp()
+        {
+            Message = $"Are you sure you want to Delete {user.UserName}",
+            Buttons = new PubUpButtons[]
+            {
+                new PubUpButtons
+                {
+                    Text = "Yes",
+                    Event = () =>
+                    {
+                        DeleteUserYes(user);
+                    }
+                },
+                new PubUpButtons
+                {
+                    Text = "No",
+                    Event =()=>
+                    {
+                        State.PubUp = null;
+                    }
+                }
+            }
+        };
+    }
+
+    public async void DeleteUserYes(User user)
+    {
+        if (await UserApi.Delete(user.Id))
+        {
+            users.Remove(user);
+            State.PubUp = null;
+            StateHasChanged();
+        }
+    }
+
+    public void Nave(Guid id)
+    {
+        nav.NavigateTo($"/Bid/{id}");
+    }
+}
